@@ -13,6 +13,7 @@
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {
+    "@remix-run/css-bundle": "^2.6.0",
     "@remix-run/react": "^2.6.0",
     "@remix-run/server-runtime": "^2.6.0",
     "@shopify/cli": "3.52.0",
