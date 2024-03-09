@@ -4,6 +4,8 @@ module.exports = {
   ignoredRouteFiles: ['**/.*'],
   watchPaths: ['./public', './.env'],
   server: './server.ts',
+  /* enable postcss */
+  postcss: true,
   /**
    * The following settings are required to deploy Hydrogen apps to Oxygen:
    */
@@ -19,6 +21,6 @@ module.exports = {
   future: {
     v3_fetcherPersist: true,
     v3_relativeSplatpath: true,
-    v3_throwAbortReason: true,
-  },
-};
+    v3_throwAbortReason: true
+  }
+}

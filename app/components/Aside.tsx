@@ -11,19 +11,19 @@
 export function Aside({
   children,
   heading,
-  id = 'aside',
+  id = 'aside'
 }: {
-  children?: React.ReactNode;
-  heading: React.ReactNode;
-  id?: string;
+  children?: React.ReactNode
+  heading: React.ReactNode
+  id?: string
 }) {
   return (
     <div aria-modal className="overlay" id={id} role="dialog">
       <button
         className="close-outside"
         onClick={() => {
-          history.go(-1);
-          window.location.hash = '';
+          history.go(-1)
+          window.location.hash = ''
         }}
       />
       <aside>
@@ -34,7 +34,7 @@ export function Aside({
         <main>{children}</main>
       </aside>
     </div>
-  );
+  )
 }
 
 function CloseAside() {
@@ -43,5 +43,5 @@ function CloseAside() {
     <a className="close" href="#" onChange={() => history.go(-1)}>
       &times;
     </a>
-  );
+  )
 }

@@ -4,8 +4,8 @@ import type {
   PredictiveProductFragment,
   PredictiveCollectionFragment,
   PredictivePageFragment,
-  PredictiveArticleFragment,
-} from 'storefrontapi.generated';
+  PredictiveArticleFragment
+} from 'storefrontapi.generated'
 
 export function applyTrackingParams(
   resource:
@@ -15,15 +15,11 @@ export function applyTrackingParams(
     | PredictiveCollectionFragment
     | PredictiveArticleFragment
     | PredictivePageFragment,
-  params?: string,
+  params?: string
 ) {
   if (params) {
-    return resource?.trackingParameters
-      ? `?${params}&${resource.trackingParameters}`
-      : `?${params}`;
+    return resource?.trackingParameters ? `?${params}&${resource.trackingParameters}` : `?${params}`
   } else {
-    return resource?.trackingParameters
-      ? `?${resource.trackingParameters}`
-      : '';
+    return resource?.trackingParameters ? `?${resource.trackingParameters}` : ''
   }
 }

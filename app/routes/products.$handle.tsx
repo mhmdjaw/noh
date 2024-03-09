@@ -1,17 +1,7 @@
-import {Suspense} from 'react';
-import {defer, redirect, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {
-  Await,
-  Link,
-  useLoaderData,
-  type MetaFunction,
-  type FetcherWithComponents,
-} from '@remix-run/react';
-import type {
-  ProductFragment,
-  ProductVariantsQuery,
-  ProductVariantFragment,
-} from 'storefrontapi.generated';
+import { Suspense } from 'react'
+import { defer, redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import { Await, Link, useLoaderData, type MetaFunction, type FetcherWithComponents } from '@remix-run/react'
+import type { ProductFragment, ProductVariantsQuery, ProductVariantFragment } from 'storefrontapi.generated'
 
 import {
   Image,
@@ -19,21 +9,18 @@ import {
   VariantSelector,
   type VariantOption,
   getSelectedProductOptions,
-  CartForm,
-} from '@shopify/hydrogen';
-import type {
-  CartLineInput,
-  SelectedOption,
-} from '@shopify/hydrogen/storefront-api-types';
-import {getVariantUrl} from '~/lib/variants';
+  CartForm
+} from '@shopify/hydrogen'
+import type { CartLineInput, SelectedOption } from '@shopify/hydrogen/storefront-api-types'
+import { getVariantUrl } from '~/lib/variants'
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `Hydrogen | ${data?.product.title ?? ''}`}];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `Hydrogen | ${data?.product.title ?? ''}` }]
+}
 
-export async function loader({params, request, context}: LoaderFunctionArgs) {
-  const {handle} = params;
-  const {storefront} = context;
+export async function loader({ params, request, context }: LoaderFunctionArgs) {
+  const { handle } = params
+  const { storefront } = context
 
   const selectedOptions = getSelectedProductOptions(request).filter(
     (option) =>
@@ -44,37 +31,36 @@ export async function loader({params, request, context}: LoaderFunctionArgs) {
       !option.name.startsWith('_ss') &&
       !option.name.startsWith('_v') &&
       // Filter out third party tracking params
-      !option.name.startsWith('fbclid'),
-  );
+      !option.name.startsWith('fbclid')
+  )
 
   if (!handle) {
-    throw new Error('Expected product handle to be defined');
+    throw new Error('Expected product handle to be defined')
   }
 
   // await the query for the critical product data
-  const {product} = await storefront.query(PRODUCT_QUERY, {
-    variables: {handle, selectedOptions},
-  });
+  const { product } = await storefront.query(PRODUCT_QUERY, {
+    variables: { handle, selectedOptions }
+  })
 
   if (!product?.id) {
-    throw new Response(null, {status: 404});
+    throw new Response(null, { status: 404 })
   }
 
-  const firstVariant = product.variants.nodes[0];
+  const firstVariant = product.variants.nodes[0]
   const firstVariantIsDefault = Boolean(
     firstVariant.selectedOptions.find(
-      (option: SelectedOption) =>
-        option.name === 'Title' && option.value === 'Default Title',
-    ),
-  );
+      (option: SelectedOption) => option.name === 'Title' && option.value === 'Default Title'
+    )
+  )
 
   if (firstVariantIsDefault) {
-    product.selectedVariant = firstVariant;
+    product.selectedVariant = firstVariant
   } else {
     // if no selected variant was returned from the selected options,
     // we redirect to the first variant's url with it's selected options applied
     if (!product.selectedVariant) {
-      throw redirectToFirstVariant({product, request});
+      throw redirectToFirstVariant({ product, request })
     }
   }
 
@@ -84,53 +70,43 @@ export async function loader({params, request, context}: LoaderFunctionArgs) {
   // where variant options might show as available when they're not, but after
   // this deffered query resolves, the UI will update.
   const variants = storefront.query(VARIANTS_QUERY, {
-    variables: {handle},
-  });
+    variables: { handle }
+  })
 
-  return defer({product, variants});
+  return defer({ product, variants })
 }
 
-function redirectToFirstVariant({
-  product,
-  request,
-}: {
-  product: ProductFragment;
-  request: Request;
-}) {
-  const url = new URL(request.url);
-  const firstVariant = product.variants.nodes[0];
+function redirectToFirstVariant({ product, request }: { product: ProductFragment; request: Request }) {
+  const url = new URL(request.url)
+  const firstVariant = product.variants.nodes[0]
 
   return redirect(
     getVariantUrl({
       pathname: url.pathname,
       handle: product.handle,
       selectedOptions: firstVariant.selectedOptions,
-      searchParams: new URLSearchParams(url.search),
+      searchParams: new URLSearchParams(url.search)
     }),
     {
-      status: 302,
-    },
-  );
+      status: 302
+    }
+  )
 }
 
 export default function Product() {
-  const {product, variants} = useLoaderData<typeof loader>();
-  const {selectedVariant} = product;
+  const { product, variants } = useLoaderData<typeof loader>()
+  const { selectedVariant } = product
   return (
     <div className="product">
       <ProductImage image={selectedVariant?.image} />
-      <ProductMain
-        selectedVariant={selectedVariant}
-        product={product}
-        variants={variants}
-      />
+      <ProductMain selectedVariant={selectedVariant} product={product} variants={variants} />
     </div>
-  );
+  )
 }
 
-function ProductImage({image}: {image: ProductVariantFragment['image']}) {
+function ProductImage({ image }: { image: ProductVariantFragment['image'] }) {
   if (!image) {
-    return <div className="product-image" />;
+    return <div className="product-image" />
   }
   return (
     <div className="product-image">
@@ -142,37 +118,26 @@ function ProductImage({image}: {image: ProductVariantFragment['image']}) {
         sizes="(min-width: 45em) 50vw, 100vw"
       />
     </div>
-  );
+  )
 }
 
 function ProductMain({
   selectedVariant,
   product,
-  variants,
+  variants
 }: {
-  product: ProductFragment;
-  selectedVariant: ProductFragment['selectedVariant'];
-  variants: Promise<ProductVariantsQuery>;
+  product: ProductFragment
+  selectedVariant: ProductFragment['selectedVariant']
+  variants: Promise<ProductVariantsQuery>
 }) {
-  const {title, descriptionHtml} = product;
+  const { title, descriptionHtml } = product
   return (
     <div className="product-main">
       <h1>{title}</h1>
       <ProductPrice selectedVariant={selectedVariant} />
       <br />
-      <Suspense
-        fallback={
-          <ProductForm
-            product={product}
-            selectedVariant={selectedVariant}
-            variants={[]}
-          />
-        }
-      >
-        <Await
-          errorElement="There was a problem loading product variants"
-          resolve={variants}
-        >
+      <Suspense fallback={<ProductForm product={product} selectedVariant={selectedVariant} variants={[]} />}>
+        <Await errorElement="There was a problem loading product variants" resolve={variants}>
           {(data) => (
             <ProductForm
               product={product}
@@ -188,17 +153,13 @@ function ProductMain({
         <strong>Description</strong>
       </p>
       <br />
-      <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+      <div dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
       <br />
     </div>
-  );
+  )
 }
 
-function ProductPrice({
-  selectedVariant,
-}: {
-  selectedVariant: ProductFragment['selectedVariant'];
-}) {
+function ProductPrice({ selectedVariant }: { selectedVariant: ProductFragment['selectedVariant'] }) {
   return (
     <div className="product-price">
       {selectedVariant?.compareAtPrice ? (
@@ -216,40 +177,36 @@ function ProductPrice({
         selectedVariant?.price && <Money data={selectedVariant?.price} />
       )}
     </div>
-  );
+  )
 }
 
 function ProductForm({
   product,
   selectedVariant,
-  variants,
+  variants
 }: {
-  product: ProductFragment;
-  selectedVariant: ProductFragment['selectedVariant'];
-  variants: Array<ProductVariantFragment>;
+  product: ProductFragment
+  selectedVariant: ProductFragment['selectedVariant']
+  variants: Array<ProductVariantFragment>
 }) {
   return (
     <div className="product-form">
-      <VariantSelector
-        handle={product.handle}
-        options={product.options}
-        variants={variants}
-      >
-        {({option}) => <ProductOptions key={option.name} option={option} />}
+      <VariantSelector handle={product.handle} options={product.options} variants={variants}>
+        {({ option }) => <ProductOptions key={option.name} option={option} />}
       </VariantSelector>
       <br />
       <AddToCartButton
         disabled={!selectedVariant || !selectedVariant.availableForSale}
         onClick={() => {
-          window.location.href = window.location.href + '#cart-aside';
+          window.location.href = window.location.href + '#cart-aside'
         }}
         lines={
           selectedVariant
             ? [
                 {
                   merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                },
+                  quantity: 1
+                }
               ]
             : []
         }
@@ -257,15 +214,15 @@ function ProductForm({
         {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
       </AddToCartButton>
     </div>
-  );
+  )
 }
 
-function ProductOptions({option}: {option: VariantOption}) {
+function ProductOptions({ option }: { option: VariantOption }) {
   return (
     <div className="product-options" key={option.name}>
       <h5>{option.name}</h5>
       <div className="product-options-grid">
-        {option.values.map(({value, isAvailable, isActive, to}) => {
+        {option.values.map(({ value, isAvailable, isActive, to }) => {
           return (
             <Link
               className="product-options-item"
@@ -276,17 +233,17 @@ function ProductOptions({option}: {option: VariantOption}) {
               to={to}
               style={{
                 border: isActive ? '1px solid black' : '1px solid transparent',
-                opacity: isAvailable ? 1 : 0.3,
+                opacity: isAvailable ? 1 : 0.3
               }}
             >
               {value}
             </Link>
-          );
+          )
         })}
       </div>
       <br />
     </div>
-  );
+  )
 }
 
 function AddToCartButton({
@@ -294,34 +251,26 @@ function AddToCartButton({
   children,
   disabled,
   lines,
-  onClick,
+  onClick
 }: {
-  analytics?: unknown;
-  children: React.ReactNode;
-  disabled?: boolean;
-  lines: CartLineInput[];
-  onClick?: () => void;
+  analytics?: unknown
+  children: React.ReactNode
+  disabled?: boolean
+  lines: CartLineInput[]
+  onClick?: () => void
 }) {
   return (
-    <CartForm route="/cart" inputs={{lines}} action={CartForm.ACTIONS.LinesAdd}>
+    <CartForm route="/cart" inputs={{ lines }} action={CartForm.ACTIONS.LinesAdd}>
       {(fetcher: FetcherWithComponents<any>) => (
         <>
-          <input
-            name="analytics"
-            type="hidden"
-            value={JSON.stringify(analytics)}
-          />
-          <button
-            type="submit"
-            onClick={onClick}
-            disabled={disabled ?? fetcher.state !== 'idle'}
-          >
+          <input name="analytics" type="hidden" value={JSON.stringify(analytics)} />
+          <button type="submit" onClick={onClick} disabled={disabled ?? fetcher.state !== 'idle'}>
             {children}
           </button>
         </>
       )}
     </CartForm>
-  );
+  )
 }
 
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
@@ -359,7 +308,7 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
       currencyCode
     }
   }
-` as const;
+` as const
 
 const PRODUCT_FRAGMENT = `#graphql
   fragment Product on Product {
@@ -387,7 +336,7 @@ const PRODUCT_FRAGMENT = `#graphql
     }
   }
   ${PRODUCT_VARIANT_FRAGMENT}
-` as const;
+` as const
 
 const PRODUCT_QUERY = `#graphql
   query Product(
@@ -401,7 +350,7 @@ const PRODUCT_QUERY = `#graphql
     }
   }
   ${PRODUCT_FRAGMENT}
-` as const;
+` as const
 
 const PRODUCT_VARIANTS_FRAGMENT = `#graphql
   fragment ProductVariants on Product {
@@ -412,7 +361,7 @@ const PRODUCT_VARIANTS_FRAGMENT = `#graphql
     }
   }
   ${PRODUCT_VARIANT_FRAGMENT}
-` as const;
+` as const
 
 const VARIANTS_QUERY = `#graphql
   ${PRODUCT_VARIANTS_FRAGMENT}
@@ -425,4 +374,4 @@ const VARIANTS_QUERY = `#graphql
       ...ProductVariants
     }
   }
-` as const;
+` as const

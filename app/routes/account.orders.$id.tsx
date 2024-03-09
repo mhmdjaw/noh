@@ -1,44 +1,38 @@
-import {json, redirect, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {Link, useLoaderData, type MetaFunction} from '@remix-run/react';
-import {Money, Image, flattenConnection} from '@shopify/hydrogen';
-import type {OrderLineItemFullFragment} from 'customer-accountapi.generated';
-import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
+import { json, redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import { useLoaderData, type MetaFunction } from '@remix-run/react'
+import { Money, Image, flattenConnection } from '@shopify/hydrogen'
+import type { OrderLineItemFullFragment } from 'customer-accountapi.generated'
+import { CUSTOMER_ORDER_QUERY } from '~/graphql/customer-account/CustomerOrderQuery'
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `Order ${data?.order?.name}`}];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `Order ${data?.order?.name}` }]
+}
 
-export async function loader({params, context, request}: LoaderFunctionArgs) {
+export async function loader({ params, context, request }: LoaderFunctionArgs) {
   if (!params.id) {
-    return redirect('/account/orders');
+    return redirect('/account/orders')
   }
 
-  const orderId = atob(params.id);
-  const {data, errors} = await context.customerAccount.query(
-    CUSTOMER_ORDER_QUERY,
-    {
-      variables: {orderId},
-    },
-  );
+  const orderId = atob(params.id)
+  const { data, errors } = await context.customerAccount.query(CUSTOMER_ORDER_QUERY, {
+    variables: { orderId }
+  })
 
   if (errors?.length || !data?.order) {
-    throw new Error('Order not found');
+    throw new Error('Order not found')
   }
 
-  const {order} = data;
+  const { order } = data
 
-  const lineItems = flattenConnection(order.lineItems);
-  const discountApplications = flattenConnection(order.discountApplications);
-  const fulfillmentStatus = flattenConnection(order.fulfillments)[0].status;
+  const lineItems = flattenConnection(order.lineItems)
+  const discountApplications = flattenConnection(order.discountApplications)
+  const fulfillmentStatus = flattenConnection(order.fulfillments)[0].status
 
-  const firstDiscount = discountApplications[0]?.value;
+  const firstDiscount = discountApplications[0]?.value
 
-  const discountValue =
-    firstDiscount?.__typename === 'MoneyV2' && firstDiscount;
+  const discountValue = firstDiscount?.__typename === 'MoneyV2' && firstDiscount
 
-  const discountPercentage =
-    firstDiscount?.__typename === 'PricingPercentageValue' &&
-    firstDiscount?.percentage;
+  const discountPercentage = firstDiscount?.__typename === 'PricingPercentageValue' && firstDiscount?.percentage
 
   return json(
     {
@@ -46,24 +40,18 @@ export async function loader({params, context, request}: LoaderFunctionArgs) {
       lineItems,
       discountValue,
       discountPercentage,
-      fulfillmentStatus,
+      fulfillmentStatus
     },
     {
       headers: {
-        'Set-Cookie': await context.session.commit(),
-      },
-    },
-  );
+        'Set-Cookie': await context.session.commit()
+      }
+    }
+  )
 }
 
 export default function OrderRoute() {
-  const {
-    order,
-    lineItems,
-    discountValue,
-    discountPercentage,
-    fulfillmentStatus,
-  } = useLoaderData<typeof loader>();
+  const { order, lineItems, discountValue, discountPercentage, fulfillmentStatus } = useLoaderData<typeof loader>()
   return (
     <div className="account-order">
       <h2>Order {order.name}</h2>
@@ -86,8 +74,7 @@ export default function OrderRoute() {
             ))}
           </tbody>
           <tfoot>
-            {((discountValue && discountValue.amount) ||
-              discountPercentage) && (
+            {((discountValue && discountValue.amount) || discountPercentage) && (
               <tr>
                 <th scope="row" colSpan={3}>
                   <p>Discounts</p>
@@ -144,16 +131,8 @@ export default function OrderRoute() {
           {order?.shippingAddress ? (
             <address>
               <p>{order.shippingAddress.name}</p>
-              {order.shippingAddress.formatted ? (
-                <p>{order.shippingAddress.formatted}</p>
-              ) : (
-                ''
-              )}
-              {order.shippingAddress.formattedArea ? (
-                <p>{order.shippingAddress.formattedArea}</p>
-              ) : (
-                ''
-              )}
+              {order.shippingAddress.formatted ? <p>{order.shippingAddress.formatted}</p> : ''}
+              {order.shippingAddress.formattedArea ? <p>{order.shippingAddress.formattedArea}</p> : ''}
             </address>
           ) : (
             <p>No shipping address defined</p>
@@ -171,10 +150,10 @@ export default function OrderRoute() {
         </a>
       </p>
     </div>
-  );
+  )
 }
 
-function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
+function OrderLineRow({ lineItem }: { lineItem: OrderLineItemFullFragment }) {
   return (
     <tr key={lineItem.id}>
       <td>
@@ -198,5 +177,5 @@ function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
         <Money data={lineItem.totalDiscount!} />
       </td>
     </tr>
-  );
+  )
 }

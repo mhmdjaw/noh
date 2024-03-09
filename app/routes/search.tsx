@@ -1,54 +1,54 @@
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, type MetaFunction} from '@remix-run/react';
-import {getPaginationVariables} from '@shopify/hydrogen';
+import { defer, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import { useLoaderData, type MetaFunction } from '@remix-run/react'
+import { getPaginationVariables } from '@shopify/hydrogen'
 
-import {SearchForm, SearchResults, NoSearchResults} from '~/components/Search';
+import { SearchForm, SearchResults, NoSearchResults } from '~/components/Search'
 
 export const meta: MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
-};
+  return [{ title: `Hydrogen | Search` }]
+}
 
-export async function loader({request, context}: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  const searchParams = new URLSearchParams(url.search);
-  const variables = getPaginationVariables(request, {pageBy: 8});
-  const searchTerm = String(searchParams.get('q') || '');
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const url = new URL(request.url)
+  const searchParams = new URLSearchParams(url.search)
+  const variables = getPaginationVariables(request, { pageBy: 8 })
+  const searchTerm = String(searchParams.get('q') || '')
 
   if (!searchTerm) {
     return {
-      searchResults: {results: null, totalResults: 0},
-      searchTerm,
-    };
+      searchResults: { results: null, totalResults: 0 },
+      searchTerm
+    }
   }
 
-  const {errors, ...data} = await context.storefront.query(SEARCH_QUERY, {
+  const { errors, ...data } = await context.storefront.query(SEARCH_QUERY, {
     variables: {
       query: searchTerm,
-      ...variables,
-    },
-  });
+      ...variables
+    }
+  })
 
   if (!data) {
-    throw new Error('No search data returned from Shopify API');
+    throw new Error('No search data returned from Shopify API')
   }
 
   const totalResults = Object.values(data).reduce((total, value) => {
-    return total + value.nodes.length;
-  }, 0);
+    return total + value.nodes.length
+  }, 0)
 
   const searchResults = {
     results: data,
-    totalResults,
-  };
+    totalResults
+  }
 
   return defer({
     searchTerm,
-    searchResults,
-  });
+    searchResults
+  })
 }
 
 export default function SearchPage() {
-  const {searchTerm, searchResults} = useLoaderData<typeof loader>();
+  const { searchTerm, searchResults } = useLoaderData<typeof loader>()
 
   return (
     <div className="search">
@@ -57,13 +57,10 @@ export default function SearchPage() {
       {!searchTerm || !searchResults.totalResults ? (
         <NoSearchResults />
       ) : (
-        <SearchResults
-          results={searchResults.results}
-          searchTerm={searchTerm}
-        />
+        <SearchResults results={searchResults.results} searchTerm={searchTerm} />
       )}
     </div>
-  );
+  )
 }
 
 const SEARCH_QUERY = `#graphql
@@ -171,4 +168,4 @@ const SEARCH_QUERY = `#graphql
       }
     }
   }
-` as const;
+` as const

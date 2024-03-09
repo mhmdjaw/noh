@@ -8,6 +8,28 @@
   --color-light: #fff;
 }
 
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+header {
+  flex-shrink: 0;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
 img {
   border-radius: 4px;
 }
@@ -298,8 +320,6 @@ aside li {
   align-items: center;
   gap: 1rem;
 }
-
-
 
 /*
 * --------------------------------------------------

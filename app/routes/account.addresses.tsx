@@ -1,84 +1,66 @@
-import type {CustomerAddressInput} from '@shopify/hydrogen/customer-account-api-types';
-import type {
-  AddressFragment,
-  CustomerFragment,
-} from 'customer-accountapi.generated';
-import {
-  json,
-  redirect,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-} from '@shopify/remix-oxygen';
-import {
-  Form,
-  useActionData,
-  useNavigation,
-  useOutletContext,
-  type MetaFunction,
-} from '@remix-run/react';
+import type { CustomerAddressInput } from '@shopify/hydrogen/customer-account-api-types'
+import type { AddressFragment, CustomerFragment } from 'customer-accountapi.generated'
+import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import { Form, useActionData, useNavigation, useOutletContext, type MetaFunction } from '@remix-run/react'
 import {
   UPDATE_ADDRESS_MUTATION,
   DELETE_ADDRESS_MUTATION,
-  CREATE_ADDRESS_MUTATION,
-} from '~/graphql/customer-account/CustomerAddressMutations';
+  CREATE_ADDRESS_MUTATION
+} from '~/graphql/customer-account/CustomerAddressMutations'
 
 export type ActionResponse = {
-  addressId?: string | null;
-  createdAddress?: AddressFragment;
-  defaultAddress?: string | null;
-  deletedAddress?: string | null;
-  error: Record<AddressFragment['id'], string> | null;
-  updatedAddress?: AddressFragment;
-};
+  addressId?: string | null
+  createdAddress?: AddressFragment
+  defaultAddress?: string | null
+  deletedAddress?: string | null
+  error: Record<AddressFragment['id'], string> | null
+  updatedAddress?: AddressFragment
+}
 
 export const meta: MetaFunction = () => {
-  return [{title: 'Addresses'}];
-};
+  return [{ title: 'Addresses' }]
+}
 
-export async function loader({context}: LoaderFunctionArgs) {
-  await context.customerAccount.handleAuthStatus();
+export async function loader({ context }: LoaderFunctionArgs) {
+  await context.customerAccount.handleAuthStatus()
 
   return json(
     {},
     {
       headers: {
-        'Set-Cookie': await context.session.commit(),
-      },
-    },
-  );
+        'Set-Cookie': await context.session.commit()
+      }
+    }
+  )
 }
 
-export async function action({request, context}: ActionFunctionArgs) {
-  const {customerAccount} = context;
+export async function action({ request, context }: ActionFunctionArgs) {
+  const { customerAccount } = context
 
   try {
-    const form = await request.formData();
+    const form = await request.formData()
 
-    const addressId = form.has('addressId')
-      ? String(form.get('addressId'))
-      : null;
+    const addressId = form.has('addressId') ? String(form.get('addressId')) : null
     if (!addressId) {
-      throw new Error('You must provide an address id.');
+      throw new Error('You must provide an address id.')
     }
 
     // this will ensure redirecting to login never happen for mutatation
-    const isLoggedIn = await customerAccount.isLoggedIn();
+    const isLoggedIn = await customerAccount.isLoggedIn()
     if (!isLoggedIn) {
       return json(
-        {error: {[addressId]: 'Unauthorized'}},
+        { error: { [addressId]: 'Unauthorized' } },
         {
           status: 401,
           headers: {
-            'Set-Cookie': await context.session.commit(),
-          },
-        },
-      );
+            'Set-Cookie': await context.session.commit()
+          }
+        }
+      )
     }
 
-    const defaultAddress = form.has('defaultAddress')
-      ? String(form.get('defaultAddress')) === 'on'
-      : false;
-    const address: CustomerAddressInput = {};
+    const defaultAddress = form.has('defaultAddress') ? String(form.get('defaultAddress')) === 'on' : false
+    const address: CustomerAddressInput = {}
     const keys: (keyof CustomerAddressInput)[] = [
       'address1',
       'address2',
@@ -89,13 +71,13 @@ export async function action({request, context}: ActionFunctionArgs) {
       'lastName',
       'phoneNumber',
       'zoneCode',
-      'zip',
-    ];
+      'zip'
+    ]
 
     for (const key of keys) {
-      const value = form.get(key);
+      const value = form.get(key)
       if (typeof value === 'string') {
-        address[key] = value;
+        address[key] = value
       }
     }
 
@@ -103,216 +85,207 @@ export async function action({request, context}: ActionFunctionArgs) {
       case 'POST': {
         // handle new address creation
         try {
-          const {data, errors} = await customerAccount.mutate(
-            CREATE_ADDRESS_MUTATION,
-            {
-              variables: {address, defaultAddress},
-            },
-          );
+          const { data, errors } = await customerAccount.mutate(CREATE_ADDRESS_MUTATION, {
+            variables: { address, defaultAddress }
+          })
 
           if (errors?.length) {
-            throw new Error(errors[0].message);
+            throw new Error(errors[0].message)
           }
 
           if (data?.customerAddressCreate?.userErrors?.length) {
-            throw new Error(data?.customerAddressCreate?.userErrors[0].message);
+            throw new Error(data?.customerAddressCreate?.userErrors[0].message)
           }
 
           if (!data?.customerAddressCreate?.customerAddress) {
-            throw new Error('Customer address create failed.');
+            throw new Error('Customer address create failed.')
           }
 
           return json(
             {
               error: null,
               createdAddress: data?.customerAddressCreate?.customerAddress,
-              defaultAddress,
+              defaultAddress
             },
             {
               headers: {
-                'Set-Cookie': await context.session.commit(),
-              },
-            },
-          );
+                'Set-Cookie': await context.session.commit()
+              }
+            }
+          )
         } catch (error: unknown) {
           if (error instanceof Error) {
             return json(
-              {error: {[addressId]: error.message}},
+              { error: { [addressId]: error.message } },
               {
                 status: 400,
                 headers: {
-                  'Set-Cookie': await context.session.commit(),
-                },
-              },
-            );
+                  'Set-Cookie': await context.session.commit()
+                }
+              }
+            )
           }
           return json(
-            {error: {[addressId]: error}},
+            { error: { [addressId]: error } },
             {
               status: 400,
               headers: {
-                'Set-Cookie': await context.session.commit(),
-              },
-            },
-          );
+                'Set-Cookie': await context.session.commit()
+              }
+            }
+          )
         }
       }
 
       case 'PUT': {
         // handle address updates
         try {
-          const {data, errors} = await customerAccount.mutate(
-            UPDATE_ADDRESS_MUTATION,
-            {
-              variables: {
-                address,
-                addressId: decodeURIComponent(addressId),
-                defaultAddress,
-              },
-            },
-          );
+          const { data, errors } = await customerAccount.mutate(UPDATE_ADDRESS_MUTATION, {
+            variables: {
+              address,
+              addressId: decodeURIComponent(addressId),
+              defaultAddress
+            }
+          })
 
           if (errors?.length) {
-            throw new Error(errors[0].message);
+            throw new Error(errors[0].message)
           }
 
           if (data?.customerAddressUpdate?.userErrors?.length) {
-            throw new Error(data?.customerAddressUpdate?.userErrors[0].message);
+            throw new Error(data?.customerAddressUpdate?.userErrors[0].message)
           }
 
           if (!data?.customerAddressUpdate?.customerAddress) {
-            throw new Error('Customer address update failed.');
+            throw new Error('Customer address update failed.')
           }
 
           return json(
             {
               error: null,
               updatedAddress: address,
-              defaultAddress,
+              defaultAddress
             },
             {
               headers: {
-                'Set-Cookie': await context.session.commit(),
-              },
-            },
-          );
+                'Set-Cookie': await context.session.commit()
+              }
+            }
+          )
         } catch (error: unknown) {
           if (error instanceof Error) {
             return json(
-              {error: {[addressId]: error.message}},
+              { error: { [addressId]: error.message } },
               {
                 status: 400,
                 headers: {
-                  'Set-Cookie': await context.session.commit(),
-                },
-              },
-            );
+                  'Set-Cookie': await context.session.commit()
+                }
+              }
+            )
           }
           return json(
-            {error: {[addressId]: error}},
+            { error: { [addressId]: error } },
             {
               status: 400,
               headers: {
-                'Set-Cookie': await context.session.commit(),
-              },
-            },
-          );
+                'Set-Cookie': await context.session.commit()
+              }
+            }
+          )
         }
       }
 
       case 'DELETE': {
         // handles address deletion
         try {
-          const {data, errors} = await customerAccount.mutate(
-            DELETE_ADDRESS_MUTATION,
-            {
-              variables: {addressId: decodeURIComponent(addressId)},
-            },
-          );
+          const { data, errors } = await customerAccount.mutate(DELETE_ADDRESS_MUTATION, {
+            variables: { addressId: decodeURIComponent(addressId) }
+          })
 
           if (errors?.length) {
-            throw new Error(errors[0].message);
+            throw new Error(errors[0].message)
           }
 
           if (data?.customerAddressDelete?.userErrors?.length) {
-            throw new Error(data?.customerAddressDelete?.userErrors[0].message);
+            throw new Error(data?.customerAddressDelete?.userErrors[0].message)
           }
 
           if (!data?.customerAddressDelete?.deletedAddressId) {
-            throw new Error('Customer address delete failed.');
+            throw new Error('Customer address delete failed.')
           }
 
           return json(
-            {error: null, deletedAddress: addressId},
+            { error: null, deletedAddress: addressId },
             {
               headers: {
-                'Set-Cookie': await context.session.commit(),
-              },
-            },
-          );
+                'Set-Cookie': await context.session.commit()
+              }
+            }
+          )
         } catch (error: unknown) {
           if (error instanceof Error) {
             return json(
-              {error: {[addressId]: error.message}},
+              { error: { [addressId]: error.message } },
               {
                 status: 400,
                 headers: {
-                  'Set-Cookie': await context.session.commit(),
-                },
-              },
-            );
+                  'Set-Cookie': await context.session.commit()
+                }
+              }
+            )
           }
           return json(
-            {error: {[addressId]: error}},
+            { error: { [addressId]: error } },
             {
               status: 400,
               headers: {
-                'Set-Cookie': await context.session.commit(),
-              },
-            },
-          );
+                'Set-Cookie': await context.session.commit()
+              }
+            }
+          )
         }
       }
 
       default: {
         return json(
-          {error: {[addressId]: 'Method not allowed'}},
+          { error: { [addressId]: 'Method not allowed' } },
           {
             status: 405,
             headers: {
-              'Set-Cookie': await context.session.commit(),
-            },
-          },
-        );
+              'Set-Cookie': await context.session.commit()
+            }
+          }
+        )
       }
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
       return json(
-        {error: error.message},
+        { error: error.message },
         {
           status: 400,
           headers: {
-            'Set-Cookie': await context.session.commit(),
-          },
-        },
-      );
+            'Set-Cookie': await context.session.commit()
+          }
+        }
+      )
     }
     return json(
-      {error},
+      { error },
       {
         status: 400,
         headers: {
-          'Set-Cookie': await context.session.commit(),
-        },
-      },
-    );
+          'Set-Cookie': await context.session.commit()
+        }
+      }
+    )
   }
 }
 
 export default function Addresses() {
-  const {customer} = useOutletContext<{customer: CustomerFragment}>();
-  const {defaultAddress, addresses} = customer;
+  const { customer } = useOutletContext<{ customer: CustomerFragment }>()
+  const { defaultAddress, addresses } = customer
 
   return (
     <div className="account-addresses">
@@ -329,14 +302,11 @@ export default function Addresses() {
           <br />
           <hr />
           <br />
-          <ExistingAddresses
-            addresses={addresses}
-            defaultAddress={defaultAddress}
-          />
+          <ExistingAddresses addresses={addresses} defaultAddress={defaultAddress} />
         </div>
       )}
     </div>
-  );
+  )
 }
 
 function NewAddressForm() {
@@ -351,58 +321,34 @@ function NewAddressForm() {
     lastName: '',
     phoneNumber: '',
     zoneCode: '',
-    zip: '',
-  } as CustomerAddressInput;
+    zip: ''
+  } as CustomerAddressInput
 
   return (
-    <AddressForm
-      addressId={'NEW_ADDRESS_ID'}
-      address={newAddress}
-      defaultAddress={null}
-    >
-      {({stateForMethod}) => (
+    <AddressForm addressId={'NEW_ADDRESS_ID'} address={newAddress} defaultAddress={null}>
+      {({ stateForMethod }) => (
         <div>
-          <button
-            disabled={stateForMethod('POST') !== 'idle'}
-            formMethod="POST"
-            type="submit"
-          >
+          <button disabled={stateForMethod('POST') !== 'idle'} formMethod="POST" type="submit">
             {stateForMethod('POST') !== 'idle' ? 'Creating' : 'Create'}
           </button>
         </div>
       )}
     </AddressForm>
-  );
+  )
 }
 
-function ExistingAddresses({
-  addresses,
-  defaultAddress,
-}: Pick<CustomerFragment, 'addresses' | 'defaultAddress'>) {
+function ExistingAddresses({ addresses, defaultAddress }: Pick<CustomerFragment, 'addresses' | 'defaultAddress'>) {
   return (
     <div>
       <legend>Existing addresses</legend>
       {addresses.nodes.map((address) => (
-        <AddressForm
-          key={address.id}
-          addressId={address.id}
-          address={address}
-          defaultAddress={defaultAddress}
-        >
-          {({stateForMethod}) => (
+        <AddressForm key={address.id} addressId={address.id} address={address} defaultAddress={defaultAddress}>
+          {({ stateForMethod }) => (
             <div>
-              <button
-                disabled={stateForMethod('PUT') !== 'idle'}
-                formMethod="PUT"
-                type="submit"
-              >
+              <button disabled={stateForMethod('PUT') !== 'idle'} formMethod="PUT" type="submit">
                 {stateForMethod('PUT') !== 'idle' ? 'Saving' : 'Save'}
               </button>
-              <button
-                disabled={stateForMethod('DELETE') !== 'idle'}
-                formMethod="DELETE"
-                type="submit"
-              >
+              <button disabled={stateForMethod('DELETE') !== 'idle'} formMethod="DELETE" type="submit">
                 {stateForMethod('DELETE') !== 'idle' ? 'Deleting' : 'Delete'}
               </button>
             </div>
@@ -410,28 +356,26 @@ function ExistingAddresses({
         </AddressForm>
       ))}
     </div>
-  );
+  )
 }
 
 export function AddressForm({
   addressId,
   address,
   defaultAddress,
-  children,
+  children
 }: {
-  addressId: AddressFragment['id'];
-  address: CustomerAddressInput;
-  defaultAddress: CustomerFragment['defaultAddress'];
+  addressId: AddressFragment['id']
+  address: CustomerAddressInput
+  defaultAddress: CustomerFragment['defaultAddress']
   children: (props: {
-    stateForMethod: (
-      method: 'PUT' | 'POST' | 'DELETE',
-    ) => ReturnType<typeof useNavigation>['state'];
-  }) => React.ReactNode;
+    stateForMethod: (method: 'PUT' | 'POST' | 'DELETE') => ReturnType<typeof useNavigation>['state']
+  }) => React.ReactNode
 }) {
-  const {state, formMethod} = useNavigation();
-  const action = useActionData<ActionResponse>();
-  const error = action?.error?.[addressId];
-  const isDefaultAddress = defaultAddress?.id === addressId;
+  const { state, formMethod } = useNavigation()
+  const action = useActionData<ActionResponse>()
+  const error = action?.error?.[addressId]
+  const isDefaultAddress = defaultAddress?.id === addressId
   return (
     <Form id={addressId}>
       <fieldset>
@@ -546,12 +490,7 @@ export function AddressForm({
           type="tel"
         />
         <div>
-          <input
-            defaultChecked={isDefaultAddress}
-            id="defaultAddress"
-            name="defaultAddress"
-            type="checkbox"
-          />
+          <input defaultChecked={isDefaultAddress} id="defaultAddress" name="defaultAddress" type="checkbox" />
           <label htmlFor="defaultAddress">Set as default address</label>
         </div>
         {error ? (
@@ -564,9 +503,9 @@ export function AddressForm({
           <br />
         )}
         {children({
-          stateForMethod: (method) => (formMethod === method ? state : 'idle'),
+          stateForMethod: (method) => (formMethod === method ? state : 'idle')
         })}
       </fieldset>
     </Form>
-  );
+  )
 }
