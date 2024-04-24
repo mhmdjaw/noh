@@ -2,7 +2,7 @@
 import '@mantine/core/styles.css'
 
 import { useNonce } from '@shopify/hydrogen'
-import { defer, type SerializeFrom, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import { defer, type SerializeFrom, type LoaderFunctionArgs, type LinksFunction } from '@shopify/remix-oxygen'
 import {
   Links,
   Meta,
@@ -23,6 +23,7 @@ import appStyles from './styles/app.css'
 import { Layout } from '~/components/Layout'
 import { cssBundleHref } from '@remix-run/css-bundle'
 import { ColorSchemeScript, MantineProvider } from '@mantine/core'
+import theme, { resolver } from './theme'
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -41,10 +42,19 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ formMethod, current
   return false
 }
 
-export function links() {
+export const links: LinksFunction = () => {
   return [
+    /* Global styles */
     { rel: 'stylesheet', href: resetStyles },
     { rel: 'stylesheet', href: appStyles },
+    /* font */
+    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap'
+    },
+    /* CSS bundling */
     ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
     {
       rel: 'preconnect',
@@ -119,7 +129,7 @@ export default function App() {
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
+        <MantineProvider theme={theme} cssVariablesResolver={resolver} defaultColorScheme="light">
           <Layout {...data}>
             <Outlet />
           </Layout>
@@ -155,17 +165,19 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
-        <Layout {...rootData}>
-          <div className="route-error">
-            <h1>Oops</h1>
-            <h2>{errorStatus}</h2>
-            {errorMessage && (
-              <fieldset>
-                <pre>{errorMessage}</pre>
-              </fieldset>
-            )}
-          </div>
-        </Layout>
+        <MantineProvider theme={theme} cssVariablesResolver={resolver} defaultColorScheme="light">
+          <Layout {...rootData}>
+            <div className="route-error">
+              <h1>Oops</h1>
+              <h2>{errorStatus}</h2>
+              {errorMessage && (
+                <fieldset>
+                  <pre>{errorMessage}</pre>
+                </fieldset>
+              )}
+            </div>
+          </Layout>
+        </MantineProvider>
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
         <LiveReload nonce={nonce} />

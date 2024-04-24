@@ -1,0 +1,15 @@
+.newsLetterButton {
+  margin-top: 0;
+  border-radius: 99px;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    margin-top: rem(16);
+  }
+}
+
+.policiesMenu {
+  justify-content: flex-end;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    margin-top: rem(16);
+    justify-content: center;
+  }
+}

@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import type { CartApiQueryFragment, FooterQuery, HeaderQuery } from 'storefrontapi.generated'
 import { Aside } from '~/components/Aside'
 import { Footer } from '~/components/Footer'
-import { Header, HeaderMenu } from '~/components/Header'
+import { Header } from '~/components/Header'
 import { CartMain } from '~/components/Cart'
 import { PredictiveSearchForm, PredictiveSearchResults } from '~/components/Search'
 
@@ -20,7 +20,6 @@ export function Layout({ cart, children = null, footer, header, isLoggedIn }: La
     <>
       <CartAside cart={cart} />
       <SearchAside />
-      <MobileMenuAside menu={header?.menu} shop={header?.shop} />
       {header && <Header header={header} cart={cart} isLoggedIn={isLoggedIn} />}
       <main>{children}</main>
       <Suspense>
@@ -36,7 +35,7 @@ function CartAside({ cart }: { cart: LayoutProps['cart'] }) {
       <Suspense fallback={<p>Loading cart ...</p>}>
         <Await resolve={cart}>
           {(cart) => {
-            return <CartMain cart={cart} layout="aside" />
+            return <CartMain cart={cart} />
           }}
         </Await>
       </Suspense>
@@ -74,16 +73,5 @@ function SearchAside() {
         <PredictiveSearchResults />
       </div>
     </Aside>
-  )
-}
-
-function MobileMenuAside({ menu, shop }: { menu: HeaderQuery['menu']; shop: HeaderQuery['shop'] }) {
-  return (
-    menu &&
-    shop?.primaryDomain?.url && (
-      <Aside id="mobile-menu-aside" heading="MENU">
-        <HeaderMenu menu={menu} viewport="mobile" primaryDomainUrl={shop.primaryDomain.url} />
-      </Aside>
-    )
   )
 }

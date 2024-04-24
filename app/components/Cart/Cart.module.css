@@ -1,0 +1,29 @@
+.cartLines {
+  flex: 1 0 auto;
+  padding: rem(16);
+  @mixin smaller-than $mantine-breakpoint-sm {
+    padding: rem(8);
+  }
+}
+
+.cartSummary {
+  position: sticky;
+  bottom: 0;
+  background: var(--mantine-color-body);
+  border-top: var(--mantine-border-width) solid var(--mantine-color-text);
+  padding: rem(32);
+  flex-shrink: 0;
+  z-index: 1;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    padding: rem(16);
+  }
+}
+
+.cartLineImage {
+  display: flex;
+}
+
+.cartLineUpdating {
+  opacity: 0.5;
+  transition: opacity 0.25s;
+}

@@ -357,6 +357,10 @@ template {
  */
 
 a {
-  -webkit-tap-highlight-color: 'transparent';
+  -webkit-tap-highlight-color: transparent;
   text-decoration: none;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
 }
