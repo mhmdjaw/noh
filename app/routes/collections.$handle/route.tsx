@@ -1,22 +1,24 @@
 import { json, redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
 import { useLoaderData, Link, type MetaFunction } from '@remix-run/react'
-import { Pagination, getPaginationVariables, Image, Money } from '@shopify/hydrogen'
+import { Pagination, getPaginationVariables, Image } from '@shopify/hydrogen'
 import type { ProductItemFragment } from 'storefrontapi.generated'
 import { useVariantUrl } from '~/lib/variants'
+import { Anchor, Grid, Overlay, Title } from '@mantine/core'
+import styles from './collections.$handle.module.css'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [{ title: `Hydrogen | ${data?.collection.title ?? ''} Collection` }]
+  return [{ title: `NOH | ${data?.collection.title ?? ''}` }]
 }
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   const { handle } = params
   const { storefront } = context
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8
+    pageBy: 50
   })
 
   if (!handle) {
-    return redirect('/collections')
+    return redirect('/')
   }
 
   const { collection } = await storefront.query(COLLECTION_QUERY, {
@@ -36,15 +38,15 @@ export default function Collection() {
 
   return (
     <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+      <Title hidden order={1}>
+        {collection.title}
+      </Title>
       <Pagination connection={collection.products}>
-        {({ nodes, isLoading, PreviousLink, NextLink }) => (
+        {({ nodes }) => (
           <>
-            <PreviousLink>{isLoading ? 'Loading...' : <span>↑ Load previous</span>}</PreviousLink>
+            {/* <PreviousLink>{isLoading ? 'Loading...' : <span>↑ Load previous</span>}</PreviousLink> */}
             <ProductsGrid products={nodes} />
-            <br />
-            <NextLink>{isLoading ? 'Loading...' : <span>Load more ↓</span>}</NextLink>
+            {/* <NextLink>{isLoading ? 'Loading...' : <span>Load more ↓</span>}</NextLink> */}
           </>
         )}
       </Pagination>
@@ -54,11 +56,11 @@ export default function Collection() {
 
 function ProductsGrid({ products }: { products: ProductItemFragment[] }) {
   return (
-    <div className="products-grid">
+    <Grid gutter={0}>
       {products.map((product, index) => {
-        return <ProductItem key={product.id} product={product} loading={index < 8 ? 'eager' : undefined} />
+        return <ProductItem key={product.id} product={product} loading={index < 50 ? 'eager' : undefined} />
       })}
-    </div>
+    </Grid>
   )
 }
 
@@ -66,21 +68,25 @@ function ProductItem({ product, loading }: { product: ProductItemFragment; loadi
   const variant = product.variants.nodes[0]
   const variantUrl = useVariantUrl(product.handle, variant.selectedOptions)
   return (
-    <Link className="product-item" key={product.id} prefetch="intent" to={variantUrl}>
-      {product.featuredImage && (
-        <Image
-          alt={product.featuredImage.altText || product.title}
-          aspectRatio="1/1"
-          data={product.featuredImage}
-          loading={loading}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
-    </Link>
+    <Grid.Col key={product.id} span={{ base: 6, sm: 4 }}>
+      <Anchor className={styles.productItem} component={Link} prefetch="intent" to={variantUrl}>
+        {product.images.nodes[0] && (
+          <Image alt={product.title} width="100%" data={product.images.nodes[0]} loading="eager" />
+        )}
+        {product.images.nodes[1] && (
+          <Image alt={product.title} width="100%" data={product.images.nodes[1]} loading="eager" />
+        )}
+        <Overlay
+          className={styles.productItemOverlay}
+          gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%)"
+          zIndex={2}
+        >
+          <Title order={1} fz={{ base: 'h3', xs: 'h2', sm: 'h1', lg: '48' }}>
+            {product.title}
+          </Title>
+        </Overlay>
+      </Anchor>
+    </Grid.Col>
   )
 }
 
@@ -89,16 +95,21 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     amount
     currencyCode
   }
+  fragment ProductImageItem on Image {
+    id
+    altText
+    url
+    width
+    height
+  }
   fragment ProductItem on Product {
     id
     handle
     title
-    featuredImage {
-      id
-      altText
-      url
-      width
-      height
+    images(first: 2) {
+      nodes {
+        ...ProductImageItem
+      }
     }
     priceRange {
       minVariantPrice {

@@ -152,7 +152,7 @@
   position: absolute;
   top: 50%;
   left: 0;
-  background: #1a1a1a;
+  background: var(--mantine-color-text);
   transition: all 250ms ease-out;
   will-change: transform;
 }

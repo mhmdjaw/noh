@@ -64,3 +64,120 @@
 .rotating {
   animation: rotating 12s linear infinite;
 }
+
+.featuredProduct {
+  position: relative;
+  display: flex;
+}
+
+.featuredProduct img {
+  height: auto;
+}
+
+.featuredProductContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: rem(40);
+  color: var(--mantine-color-body);
+  text-transform: uppercase;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    padding: rem(26);
+  }
+}
+
+.slogan {
+  text-align: center;
+  padding: rem(60);
+  font-size: rem(64);
+  text-transform: uppercase;
+  @mixin smaller-than $mantine-breakpoint-md {
+    font-size: rem(42);
+    padding: rem(48) rem(32);
+  }
+  @mixin smaller-than $mantine-breakpoint-sm {
+    font-size: rem(32);
+    padding: rem(48) rem(24);
+  }
+  @mixin smaller-than $mantine-breakpoint-xs {
+    font-size: rem(26);
+    padding: rem(48) rem(16);
+  }
+}
+
+@keyframes blurring {
+  0% {
+    filter: blur(0);
+  }
+  30% {
+    filter: blur(0);
+  }
+  40% {
+    filter: blur(3px);
+  }
+  50% {
+    filter: blur(3px);
+  }
+  60% {
+    filter: blur(3px);
+  }
+  70% {
+    filter: blur(0);
+  }
+  100% {
+    filter: blur(0);
+  }
+}
+
+.blur {
+  filter: blur(3px);
+  animation: blurring 5s linear infinite;
+}
+
+.shopAllImage {
+  position: relative;
+  width: 70%;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    width: 100%;
+  }
+}
+
+.shopAllImage img {
+  display: flex;
+  height: auto;
+}
+
+.shopAllOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  @mixin hover {
+    opacity: 1;
+  }
+  @mixin smaller-than $mantine-breakpoint-sm {
+    opacity: 1;
+  }
+}
+
+.shopAllLink {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.socials {
+  position: fixed;
+  right: 0;
+  top: calc(50% + calc(var(--mantine-header-height) / 2));
+  transform: translateY(-50%);
+  background-color: var(--mantine-color-body);
+  border: var(--mantine-border-width) solid var(--mantine-color-text);
+  z-index: 9;
+  border-start-start-radius: 30px;
+  border-end-start-radius: 30px;
+  border-right-width: 0;
+}

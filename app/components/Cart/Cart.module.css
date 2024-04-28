@@ -1,9 +1,5 @@
 .cartLines {
   flex: 1 0 auto;
-  padding: rem(16);
-  @mixin smaller-than $mantine-breakpoint-sm {
-    padding: rem(8);
-  }
 }
 
 .cartSummary {
@@ -19,8 +15,17 @@
   }
 }
 
+.cartLineImageLink {
+  align-self: center;
+}
+
 .cartLineImage {
   display: flex;
+  height: auto;
+  width: rem(130) !important;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    width: rem(100) !important;
+  }
 }
 
 .cartLineUpdating {

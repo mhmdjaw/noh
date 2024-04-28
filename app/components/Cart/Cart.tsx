@@ -4,10 +4,9 @@ import { Link } from '@remix-run/react'
 import type { CartApiQueryFragment } from 'storefrontapi.generated'
 import { useVariantUrl } from '~/lib/variants'
 import styles from './Cart.module.css'
-import { ActionIcon, Anchor, Button, Divider, Group, Stack, Text, Title, useMantineTheme } from '@mantine/core'
+import { ActionIcon, Anchor, Box, Button, Divider, Group, Stack, Text, Title } from '@mantine/core'
 import { HiMinus, HiPlus } from 'react-icons/hi2'
 import { IconContext } from 'react-icons'
-import { useMediaQuery } from '@mantine/hooks'
 import cx from 'clsx'
 import { useCartFetchers } from '~/hooks'
 
@@ -56,7 +55,7 @@ function CartLines({ lines }: { lines: CartApiQueryFragment['lines'] | undefined
       {lines.nodes.map((line, i) => (
         <>
           <CartLineItem key={line.id} line={line} />
-          {i < lines.nodes.length - 1 && <Divider my={{ base: 8, sm: 'md' }} />}
+          {i < lines.nodes.length - 1 && <Divider />}
         </>
       ))}
     </div>
@@ -76,26 +75,20 @@ function CartLineItem({ line }: { line: CartLine }) {
     )
   })
 
-  const theme = useMantineTheme()
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
-
   return (
-    <Group key={id} justify="center" className={cx({ [styles.cartLineUpdating]: removeLoading })}>
-      <Link to={lineItemUrl}>
-        {image && (
-          <Image
-            className={styles.cartLineImage}
-            alt={title}
-            // aspectRatio="1/1"
-            data={image}
-            loading="lazy"
-            width={isMobile ? 100 : 130}
-          />
-        )}
+    <Group
+      gap={0}
+      key={id}
+      align="stretch"
+      justify="center"
+      className={cx({ [styles.cartLineUpdating]: removeLoading })}
+    >
+      <Link to={lineItemUrl} className={styles.cartLineImageLink}>
+        {image && <Image className={styles.cartLineImage} alt={title} data={image} loading="lazy" />}
       </Link>
-      <Stack justify="space-between" p={{ base: 8, sm: 16 }} flex="1 0 auto">
-        <Group justify="space-between" align="flex-start">
-          <div>
+      <Stack miw={0} justify="space-between" p={{ base: 8, sm: 16 }} flex="1 1 0">
+        <Group align="flex-start">
+          <Box flex="1 1 0">
             <Anchor component={Link} prefetch="intent" to={lineItemUrl}>
               <Text size="xl">
                 <strong>{product.title}</strong>
@@ -113,7 +106,7 @@ function CartLineItem({ line }: { line: CartLine }) {
             <Text size="md" fw="var(--mantine-fw-b)" c="var(--mantine-color-gray-text)">
               {selectedOptions.map((option, i) => option.value + (i < selectedOptions.length - 1 ? ' / ' : ''))}
             </Text>
-          </div>
+          </Box>
           <CartLinePrice line={line} />
         </Group>
         {<CartLineQuantity line={line} />}
@@ -147,7 +140,7 @@ function CartCheckoutActions({ checkoutUrl, close }: { checkoutUrl: string; clos
       >
         CHECKOUT
       </Button>
-      <Button component={Link} to="/collections" size="lg" variant="outline" onClick={close}>
+      <Button component={Link} to="/collections/shop-all" size="lg" variant="outline" onClick={close}>
         SHOP MORE
       </Button>
     </Stack>
@@ -238,6 +231,7 @@ function CartLineQuantity({ line }: { line: CartLine }) {
               name="decrease-quantity"
               value={prevQuantity}
               type="submit"
+              bg="transparent"
             >
               <HiMinus />
             </ActionIcon>
@@ -254,6 +248,7 @@ function CartLineQuantity({ line }: { line: CartLine }) {
               name="increase-quantity"
               value={nextQuantity}
               type="submit"
+              bg="transparent"
             >
               <HiPlus />
             </ActionIcon>
@@ -300,7 +295,7 @@ function CartEmpty({ hidden = false, close }: { hidden: boolean; close: CartMain
         <Text fw="var(--mantine-fw-sb)" size="lg">
           Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you started!
         </Text>
-        <Button component={Link} to="/collections" onClick={close} size="lg" variant="outline" color="black">
+        <Button component={Link} to="/collections/shop-all" onClick={close} size="lg" variant="outline" color="black">
           CONTINUE SHOPPING
         </Button>
       </Stack>

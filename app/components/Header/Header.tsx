@@ -307,7 +307,7 @@ const FALLBACK_HEADER_MENU = {
       tags: [],
       title: 'Shop',
       type: 'HTTP',
-      url: '/collections',
+      url: '/collections/shop-all',
       items: []
     },
     {

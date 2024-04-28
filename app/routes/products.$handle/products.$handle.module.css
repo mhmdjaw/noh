@@ -1,0 +1,92 @@
+.imageGrid {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  max-height: 150vw;
+  height: 100%;
+  scroll-snap-type: x mandatory;
+  position: relative;
+  @mixin larger-than $mantine-breakpoint-sm {
+    grid-auto-flow: unset;
+    grid-auto-columns: unset;
+    overflow-y: visible;
+    overflow-x: visible;
+    max-height: none;
+  }
+}
+
+.imageGrid button {
+  scroll-snap-align: start;
+}
+
+.productImage img {
+  display: flex;
+  height: auto;
+  width: 100%;
+}
+
+.stickySection {
+  position: sticky;
+  top: var(--mantine-header-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - var(--mantine-header-height));
+  @mixin smaller-than $mantine-breakpoint-sm {
+    position: relative;
+    height: auto;
+    top: 0;
+  }
+}
+
+.productOnSale {
+  font-weight: var(--mantine-fw-sb);
+  font-size: rem(20);
+}
+
+.productOnSale s {
+  opacity: 0.5;
+}
+
+.accordionItem {
+  border-color: var(--mantine-color-text);
+}
+
+.accordionControl {
+  padding: 0;
+  background-color: transparent !important;
+}
+
+.accordionLabel {
+  font-weight: var(--mantine-fw-sb);
+  font-size: rem(18);
+}
+
+.accordionPanel {
+  display: block !important;
+}
+
+.accordionContent {
+  padding-left: 0;
+  padding-right: 0;
+  font-weight: var(--mantine-fw-md);
+}
+
+.accordionChevron {
+  &[data-rotate] {
+    transform: rotate(45deg);
+  }
+}
+
+.accordionIcon {
+  width: rem(16);
+  height: rem(16);
+}
+
+.chipLabel {
+  border-radius: 0;
+}

@@ -1,8 +1,7 @@
 import { Suspense } from 'react'
 import { defer, redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
-import { Await, Link, useLoaderData, type MetaFunction, type FetcherWithComponents } from '@remix-run/react'
+import { Await, Link, useLoaderData, type MetaFunction, type FetcherWithComponents, NavLink } from '@remix-run/react'
 import type { ProductFragment, ProductVariantsQuery, ProductVariantFragment } from 'storefrontapi.generated'
-
 import {
   Image,
   Money,
@@ -11,11 +10,26 @@ import {
   getSelectedProductOptions,
   CartForm
 } from '@shopify/hydrogen'
-import type { CartLineInput, SelectedOption } from '@shopify/hydrogen/storefront-api-types'
+import type { CartLineInput, ProductOption, SelectedOption } from '@shopify/hydrogen/storefront-api-types'
 import { getVariantUrl } from '~/lib/variants'
+import {
+  Accordion,
+  AccordionControl,
+  AccordionPanel,
+  Anchor,
+  Button,
+  Chip,
+  Grid,
+  Group,
+  Stack,
+  Title,
+  UnstyledButton
+} from '@mantine/core'
+import styles from './products.$handle.module.css'
+import { HiPlus } from 'react-icons/hi2'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [{ title: `Hydrogen | ${data?.product.title ?? ''}` }]
+  return [{ title: `NOH | ${data?.product.title ?? ''}` }]
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -97,26 +111,48 @@ export default function Product() {
   const { product, variants } = useLoaderData<typeof loader>()
   const { selectedVariant } = product
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <ProductMain selectedVariant={selectedVariant} product={product} variants={variants} />
-    </div>
+    <Grid gutter={0}>
+      <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 2, sm: 1 }}>
+        <ProductMain selectedVariant={selectedVariant} product={product} variants={variants} />
+      </Grid.Col>
+      <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 1, sm: 2 }}>
+        <ProductImage variantImage={selectedVariant?.image} images={product.images.nodes} />
+      </Grid.Col>
+      <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 3, sm: 3 }}>
+        <ProductAction selectedVariant={selectedVariant} />
+      </Grid.Col>
+    </Grid>
   )
 }
 
-function ProductImage({ image }: { image: ProductVariantFragment['image'] }) {
-  if (!image) {
-    return <div className="product-image" />
+function ProductImage({
+  variantImage,
+  images
+}: {
+  variantImage: ProductVariantFragment['image']
+  images: ProductFragment['images']['nodes']
+}) {
+  if (!variantImage) {
+    return <div className={styles.productImage} />
   }
   return (
-    <div className="product-image">
-      <Image
-        alt={image.altText || 'Product Image'}
-        aspectRatio="1/1"
-        data={image}
-        key={image.id}
-        sizes="(min-width: 45em) 50vw, 100vw"
-      />
+    <div className={styles.imageGrid}>
+      <UnstyledButton key={variantImage.id}>
+        <div className={styles.productImage}>
+          <Image alt={variantImage.altText || 'Product Image'} data={variantImage} width="100%" />
+        </div>
+      </UnstyledButton>
+      {images.map(
+        (imageData) =>
+          (!imageData.altText || variantImage.altText === imageData.altText) &&
+          variantImage.url !== imageData.url && (
+            <UnstyledButton key={imageData.id}>
+              <div className={styles.productImage}>
+                <Image alt={imageData.altText || 'Product Image'} data={imageData} width="100%" />
+              </div>
+            </UnstyledButton>
+          )
+      )}
     </div>
   )
 }
@@ -130,48 +166,30 @@ function ProductMain({
   selectedVariant: ProductFragment['selectedVariant']
   variants: Promise<ProductVariantsQuery>
 }) {
-  const { title, descriptionHtml } = product
   return (
-    <div className="product-main">
-      <h1>{title}</h1>
-      <ProductPrice selectedVariant={selectedVariant} />
-      <br />
-      <Suspense fallback={<ProductForm product={product} selectedVariant={selectedVariant} variants={[]} />}>
-        <Await errorElement="There was a problem loading product variants" resolve={variants}>
-          {(data) => (
-            <ProductForm
-              product={product}
-              selectedVariant={selectedVariant}
-              variants={data.product?.variants.nodes || []}
-            />
-          )}
-        </Await>
-      </Suspense>
-      <br />
-      <br />
-      <p>
-        <strong>Description</strong>
-      </p>
-      <br />
-      <div dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
-      <br />
+    <div className={styles.stickySection}>
+      <Stack maw={400} p={32}>
+        <Title order={1}>{product.title}</Title>
+        <ProductPrice selectedVariant={selectedVariant} />
+        <Suspense fallback={<ProductContent product={product} variants={[]} />}>
+          <Await resolve={variants}>
+            {(data) => <ProductContent product={product} variants={data.product?.variants.nodes || []} />}
+          </Await>
+        </Suspense>
+      </Stack>
     </div>
   )
 }
 
 function ProductPrice({ selectedVariant }: { selectedVariant: ProductFragment['selectedVariant'] }) {
   return (
-    <div className="product-price">
+    <div className={styles.productOnSale}>
       {selectedVariant?.compareAtPrice ? (
         <>
-          <p>Sale</p>
-          <br />
-          <div className="product-price-on-sale">
-            {selectedVariant ? <Money data={selectedVariant.price} /> : null}
-            <s>
-              <Money data={selectedVariant.compareAtPrice} />
-            </s>
-          </div>
+          <s>
+            <Money data={selectedVariant.compareAtPrice} />
+          </s>
+          {selectedVariant ? <Money data={selectedVariant.price} /> : null}
         </>
       ) : (
         selectedVariant?.price && <Money data={selectedVariant?.price} />
@@ -180,26 +198,67 @@ function ProductPrice({ selectedVariant }: { selectedVariant: ProductFragment['s
   )
 }
 
-function ProductForm({
-  product,
-  selectedVariant,
-  variants
-}: {
-  product: ProductFragment
-  selectedVariant: ProductFragment['selectedVariant']
-  variants: Array<ProductVariantFragment>
-}) {
+function ProductContent({ product, variants }: { product: ProductFragment; variants: Array<ProductVariantFragment> }) {
+  const options: Pick<ProductOption, 'name' | 'values'>[] = product.options.map((option) => ({
+    name: option.name,
+    values: option.values.length === 1 ? [option.values[0], ''] : option.values
+  }))
+
   return (
-    <div className="product-form">
-      <VariantSelector handle={product.handle} options={product.options} variants={variants}>
-        {({ option }) => <ProductOptions key={option.name} option={option} />}
+    <Accordion
+      defaultValue="Description"
+      classNames={{
+        item: styles.accordionItem,
+        control: styles.accordionControl,
+        label: styles.accordionLabel,
+        panel: styles.accordionPanel,
+        content: styles.accordionContent,
+        chevron: styles.accordionChevron
+      }}
+      chevron={<HiPlus />}
+    >
+      <Accordion.Item key="Description" value="Description">
+        <AccordionControl>Description</AccordionControl>
+        <AccordionPanel>
+          <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+        </AccordionPanel>
+      </Accordion.Item>
+      <VariantSelector handle={product.handle} options={options} variants={variants}>
+        {({ option }) => (
+          <Accordion.Item key={option.name} value={option.name}>
+            <AccordionControl>{option.name}</AccordionControl>
+            <AccordionPanel>
+              <ProductOptions option={option} />
+            </AccordionPanel>
+          </Accordion.Item>
+        )}
       </VariantSelector>
-      <br />
+    </Accordion>
+  )
+}
+
+function ProductOptions({ option }: { option: VariantOption }) {
+  return (
+    <Group>
+      {option.values.map(({ value, isAvailable, isActive, to }) => {
+        if (!value) return <></>
+        return (
+          <Anchor key={option.name + value} component={Link} prefetch="intent" preventScrollReset replace to={to}>
+            <Chip classNames={{ label: styles.chipLabel }} checked={isActive}>
+              {value}
+            </Chip>
+          </Anchor>
+        )
+      })}
+    </Group>
+  )
+}
+
+function ProductAction({ selectedVariant }: { selectedVariant: ProductFragment['selectedVariant'] }) {
+  return (
+    <div className={styles.stickySection}>
       <AddToCartButton
         disabled={!selectedVariant || !selectedVariant.availableForSale}
-        onClick={() => {
-          window.location.href = window.location.href + '#cart-aside'
-        }}
         lines={
           selectedVariant
             ? [
@@ -211,37 +270,8 @@ function ProductForm({
             : []
         }
       >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+        {selectedVariant?.availableForSale ? 'ADD TO BAG' : 'SOLD OUT'}
       </AddToCartButton>
-    </div>
-  )
-}
-
-function ProductOptions({ option }: { option: VariantOption }) {
-  return (
-    <div className="product-options" key={option.name}>
-      <h5>{option.name}</h5>
-      <div className="product-options-grid">
-        {option.values.map(({ value, isAvailable, isActive, to }) => {
-          return (
-            <Link
-              className="product-options-item"
-              key={option.name + value}
-              prefetch="intent"
-              preventScrollReset
-              replace
-              to={to}
-              style={{
-                border: isActive ? '1px solid black' : '1px solid transparent',
-                opacity: isAvailable ? 1 : 0.3
-              }}
-            >
-              {value}
-            </Link>
-          )
-        })}
-      </div>
-      <br />
     </div>
   )
 }
@@ -250,23 +280,27 @@ function AddToCartButton({
   analytics,
   children,
   disabled,
-  lines,
-  onClick
+  lines
 }: {
   analytics?: unknown
   children: React.ReactNode
   disabled?: boolean
   lines: CartLineInput[]
-  onClick?: () => void
 }) {
   return (
     <CartForm route="/cart" inputs={{ lines }} action={CartForm.ACTIONS.LinesAdd}>
       {(fetcher: FetcherWithComponents<any>) => (
         <>
           <input name="analytics" type="hidden" value={JSON.stringify(analytics)} />
-          <button type="submit" onClick={onClick} disabled={disabled ?? fetcher.state !== 'idle'}>
+          <Button
+            type="submit"
+            disabled={disabled}
+            loading={fetcher.state !== 'idle'}
+            loaderProps={{ type: 'dots' }}
+            size="xl"
+          >
             {children}
-          </button>
+          </Button>
         </>
       )}
     </CartForm>
@@ -321,6 +355,16 @@ const PRODUCT_FRAGMENT = `#graphql
     options {
       name
       values
+    }
+    images(first: 250) {
+      nodes {
+        __typename
+        id
+        url
+        altText
+        width
+        height
+      }
     }
     selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
       ...ProductVariant

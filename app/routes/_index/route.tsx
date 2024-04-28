@@ -1,11 +1,12 @@
 import { defer, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
 import { Await, useLoaderData, Link, type MetaFunction } from '@remix-run/react'
 import { Suspense } from 'react'
-import { Image, Money } from '@shopify/hydrogen'
+import { Image } from '@shopify/hydrogen'
 import { BsEyeglasses } from 'react-icons/bs'
-import type { FeaturedCollectionFragment, RecommendedProductsQuery } from 'storefrontapi.generated'
+import type { FeaturedProductFragment } from 'storefrontapi.generated'
+import { ActionIcon, Anchor, Button, Grid, Group, Overlay, Stack, Title, rem } from '@mantine/core'
+import { FaInstagram, FaFacebook } from 'react-icons/fa'
 import styles from './_index.module.css'
-import { rem } from '@mantine/core'
 
 export const meta: MetaFunction = () => {
   return [{ title: 'NOH | Home' }]
@@ -13,26 +14,32 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const { storefront } = context
-  const { collections } = await storefront.query(FEATURED_COLLECTION_QUERY)
-  const featuredCollection = collections.nodes[0]
-  const recommendedProducts = storefront.query(RECOMMENDED_PRODUCTS_QUERY)
+  const featuredCollection = storefront.query(FEATURED_QUERY, {
+    variables: { handle: 'featured', first: 2 }
+  })
 
-  return defer({ featuredCollection, recommendedProducts })
+  return defer({ featuredCollection })
 }
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>()
+
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+      <Hero />
+      <Suspense fallback={<></>}>
+        <Await resolve={data.featuredCollection}>
+          {({ collection }) => collection && <Featured products={collection.products.nodes} />}
+        </Await>
+      </Suspense>
+      <Slogan />
+      <ShopAll />
+      <Socials />
     </div>
   )
 }
 
-function FeaturedCollection({ collection }: { collection: FeaturedCollectionFragment }) {
-  if (!collection) return null
-  const image = collection?.image
+function Hero() {
   return (
     <div className={styles.heroSection}>
       <div className={styles.heroSectionImage}>
@@ -53,7 +60,7 @@ function FeaturedCollection({ collection }: { collection: FeaturedCollectionFrag
         <video className="media" autoPlay loop muted playsInline src="/noh-video.mp4"></video>
       </div>
       <div className={styles.heroSectionContent}>
-        <Link className={`${styles.roundedText} ${styles.rotating}`} prefetch="intent" to="/collections">
+        <Link className={`${styles.roundedText} ${styles.rotating}`} prefetch="intent" to="/collections/shop-all">
           <svg viewBox="0 0 230 230">
             <path
               id="textPath"
@@ -72,87 +79,158 @@ function FeaturedCollection({ collection }: { collection: FeaturedCollectionFrag
         </Link>
       </div>
       <div className={styles.heroSectionContent}>
-        <BsEyeglasses size="7rem" color="var(--mantine-color-body)" />
+        <BsEyeglasses size="6rem" color="var(--mantine-color-body)" />
       </div>
     </div>
   )
 }
 
-function RecommendedProducts({ products }: { products: Promise<RecommendedProductsQuery> }) {
+function Featured({ products }: { products: FeaturedProductFragment[] }) {
   return (
-    <div className="recommended-products">
-      <h2>Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await resolve={products}>
-          {({ products }) => (
-            <div className="recommended-products-grid">
-              {products.nodes.map((product) => (
-                <Link key={product.id} className="recommended-product" to={`/products/${product.handle}`}>
-                  <Image data={product.images.nodes[0]} aspectRatio="1/1" sizes="(min-width: 45em) 20vw, 50vw" />
-                  <h4>{product.title}</h4>
-                  <small>
-                    <Money data={product.priceRange.minVariantPrice} />
-                  </small>
-                </Link>
-              ))}
+    <Grid gutter={0}>
+      {products.map(({ id, title, images, handle }) => (
+        <Grid.Col key={id} span={{ base: 12, xs: 6 }}>
+          <Anchor component={Link} to={`/products/${handle}`} prefetch="intent" className={styles.featuredProduct}>
+            <Image alt={images.nodes[1].altText || 'product image'} data={images.nodes[1]} />
+            <div className={styles.featuredProductContent}>
+              <Title order={1} fz={{ base: 36, md: 42, lg: 64 }}>
+                {title}
+              </Title>
+              <Button
+                component={Link}
+                prefetch="intent"
+                to={`/products/${handle}`}
+                variant="outline"
+                color="white"
+                size="lg"
+                hiddenFrom="md"
+              >
+                Shop Now
+              </Button>
+              <Button
+                component={Link}
+                prefetch="intent"
+                to={`/products/${handle}`}
+                variant="outline"
+                color="white"
+                size="xl"
+                visibleFrom="md"
+              >
+                Shop Now
+              </Button>
             </div>
-          )}
-        </Await>
-      </Suspense>
-      <br />
+          </Anchor>
+        </Grid.Col>
+      ))}
+    </Grid>
+  )
+}
+
+function Slogan() {
+  return (
+    <Title className={styles.slogan} order={1}>
+      envision <span className={styles.blur}>bespoke</span> excellence
+    </Title>
+  )
+}
+
+function ShopAll() {
+  return (
+    <Group justify="center">
+      <div className={styles.shopAllImage}>
+        <Image
+          alt="shop all"
+          data={{ url: 'https://cdn.shopify.com/s/files/1/0655/4710/8520/files/eye_glasses_shop_all.jpg?v=1714172670' }}
+          width="100%"
+        />
+        <Overlay
+          className={styles.shopAllOverlay}
+          gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%)"
+          zIndex={10}
+        >
+          <Anchor className={styles.shopAllLink} prefetch="intent" component={Link} to="/collections/shop-all" />
+          <Button
+            component={Link}
+            prefetch="intent"
+            to="/collections/shop-all"
+            variant="outline"
+            color="white"
+            size="xl"
+            visibleFrom="sm"
+          >
+            VIEW OUR COLLECTION
+          </Button>
+          <Button
+            component={Link}
+            prefetch="intent"
+            to="/collections/shop-all"
+            variant="outline"
+            color="white"
+            size="lg"
+            hiddenFrom="sm"
+          >
+            VIEW OUR COLLECTION
+          </Button>
+        </Overlay>
+      </div>
+    </Group>
+  )
+}
+
+function Socials() {
+  return (
+    <div className={styles.socials}>
+      <Stack py={15} pl={7} gap={12}>
+        <ActionIcon component="a" variant="transparent" size="xl" href="#">
+          <FaInstagram size="70%" />
+        </ActionIcon>
+        <ActionIcon component="a" variant="transparent" size="xl" href="#">
+          <FaFacebook size="70%" />
+        </ActionIcon>
+      </Stack>
     </div>
   )
 }
 
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
+const FEATURED_PRODUCT_FRAGMENT = `#graphql
+  fragment FeaturedProduct on Product {
     id
-    title
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
     handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...FeaturedCollection
-      }
-    }
-  }
-` as const
-
-const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-  fragment RecommendedProduct on Product {
-    id
     title
-    handle
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    images(first: 1) {
+    images(first: 2) {
       nodes {
         id
-        url
         altText
+        url
         width
         height
       }
     }
   }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...RecommendedProduct
+` as const
+
+// NOTE: https://shopify.dev/docs/api/storefront/2022-04/objects/collection
+const FEATURED_QUERY = `#graphql
+  ${FEATURED_PRODUCT_FRAGMENT}
+  query FeaturedProducts(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+    $first: Int
+    $last: Int
+    $startCursor: String
+    $endCursor: String
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      products(
+        first: $first,
+        last: $last,
+        before: $startCursor,
+        after: $endCursor
+      ) {
+        nodes {
+          ...FeaturedProduct
+        }
       }
     }
   }
