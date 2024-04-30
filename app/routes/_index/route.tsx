@@ -136,7 +136,7 @@ function Slogan() {
 
 function ShopAll() {
   return (
-    <Group justify="center">
+    <Group justify="center" pb={40}>
       <div className={styles.shopAllImage}>
         <Image
           alt="shop all"

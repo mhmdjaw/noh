@@ -6,7 +6,9 @@ import styles from './Footer.module.css'
 
 export function Footer({ menu, shop }: FooterQuery & { shop: HeaderQuery['shop'] }) {
   return (
-    <footer>{shop?.primaryDomain?.url && <FooterMenu menu={menu} primaryDomainUrl={shop.primaryDomain.url} />}</footer>
+    <footer className={styles.footer}>
+      {shop?.primaryDomain?.url && <FooterMenu menu={menu} primaryDomainUrl={shop.primaryDomain.url} />}
+    </footer>
   )
 }
 

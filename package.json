@@ -18,8 +18,8 @@
     "@remix-run/react": "^2.6.0",
     "@remix-run/server-runtime": "^2.6.0",
     "@shopify/cli": "3.52.0",
-    "@shopify/cli-hydrogen": "^7.1.2",
-    "@shopify/hydrogen": "~2024.1.2",
+    "@shopify/cli-hydrogen": "^8.0.1",
+    "@shopify/hydrogen": "^2024.4.1",
     "@shopify/remix-oxygen": "^2.0.3",
     "clsx": "^2.1.0",
     "graphql": "^16.6.0",
@@ -30,8 +30,11 @@
     "react-icons": "^5.1.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
     "@remix-run/dev": "^2.6.0",
     "@remix-run/eslint-config": "^2.6.0",
+    "@shopify/hydrogen-codegen": "^0.3.0",
+    "@shopify/mini-oxygen": "^3.0.1",
     "@shopify/oxygen-workers-types": "^4.0.0",
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/eslint": "^8.4.10",

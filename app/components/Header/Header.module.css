@@ -46,7 +46,7 @@
   }
 }
 
-.menuDropDown::before,
+/* .menuDropDown::before,
 .menuDropDown::after {
   content: '';
   position: absolute;
@@ -65,7 +65,7 @@
 .menuDropDown::after {
   right: 0;
   transform: rotateZ(45deg) translateX(17.5vw);
-}
+} */
 
 .menuDropDownActive {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
@@ -182,7 +182,7 @@
   display: flex;
   flex: 1 1 0;
   justify-content: end;
-  gap: 4rem;
+  gap: 3rem;
   @mixin smaller-than $mantine-breakpoint-md {
     gap: 2rem;
   }

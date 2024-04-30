@@ -25,6 +25,8 @@ import { IconContext } from 'react-icons'
 import { useClickOutside, useDisclosure, useMediaQuery } from '@mantine/hooks'
 import cx from 'clsx'
 import { CartMain } from '../Cart'
+import { useCartFetchers } from '~/hooks'
+import { CartForm } from '@shopify/hydrogen'
 
 type HeaderProps = Pick<LayoutProps, 'header' | 'cart' | 'isLoggedIn'>
 
@@ -175,11 +177,19 @@ function CartLayout({ count, cart }: { count: number; cart: CartApiQueryFragment
   const theme = useMantineTheme()
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
-  const [opened, { toggle, close }] = useDisclosure()
+  const [opened, { toggle, close, open }] = useDisclosure()
   const [aside, setAside] = useState<HTMLDivElement | null>(null)
   const [button, setButton] = useState<HTMLAnchorElement | null>(null)
 
   useClickOutside(close, null, [aside, button])
+
+  const addToCartFetchers = useCartFetchers(CartForm.ACTIONS.LinesAdd)
+
+  // open cart aside when adding to cart
+  useEffect(() => {
+    if (opened || !addToCartFetchers.length) return
+    open()
+  }, [addToCartFetchers, opened, open])
 
   return (
     // <a href="#cart-aside">Cart {count}</a>

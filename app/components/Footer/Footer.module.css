@@ -1,3 +1,7 @@
+.footer {
+  border-top: var(--mantine-border-width) solid var(--mantine-color-text);
+}
+
 .newsLetterButton {
   margin-top: 0;
   border-radius: 99px;

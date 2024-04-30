@@ -1,7 +1,7 @@
 /* import mantine styles */
 import '@mantine/core/styles.css'
 
-import { useNonce } from '@shopify/hydrogen'
+import { useNonce, UNSTABLE_Analytics as Analytics, getShopAnalytics } from '@shopify/hydrogen'
 import { defer, type SerializeFrom, type LoaderFunctionArgs, type LinksFunction } from '@shopify/remix-oxygen'
 import {
   Links,
@@ -101,6 +101,14 @@ export async function loader({ context }: LoaderFunctionArgs) {
 
   return defer(
     {
+      shop: getShopAnalytics({
+        storefront: context.storefront,
+        publicStorefrontId: context.env.PUBLIC_STOREFRONT_ID
+      }),
+      consent: {
+        checkoutDomain: context.env.PUBLIC_STORE_DOMAIN,
+        storefrontAccessToken: context.env.PUBLIC_STOREFRONT_API_TOKEN
+      },
       cart: cartPromise,
       footer: footerPromise,
       header: await headerPromise,
@@ -129,14 +137,16 @@ export default function App() {
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider theme={theme} cssVariablesResolver={resolver} defaultColorScheme="light">
-          <Layout {...data}>
-            <Outlet />
-          </Layout>
-          <ScrollRestoration nonce={nonce} />
-          <Scripts nonce={nonce} />
-          <LiveReload nonce={nonce} />
-        </MantineProvider>
+        <Analytics.Provider cart={data.cart} shop={data.shop} consent={data.consent}>
+          <MantineProvider theme={theme} cssVariablesResolver={resolver} defaultColorScheme="light">
+            <Layout {...data}>
+              <Outlet />
+            </Layout>
+          </MantineProvider>
+        </Analytics.Provider>
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
+        <LiveReload nonce={nonce} />
       </body>
     </html>
   )

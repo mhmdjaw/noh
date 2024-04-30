@@ -29,6 +29,37 @@
   width: 100%;
 }
 
+.zoomIn {
+  cursor: zoom-in;
+}
+
+.modalHeader {
+  position: absolute;
+  top: rem(40);
+  right: rem(40);
+  padding: 0;
+  min-height: 0;
+  z-index: 99999;
+  background-color: transparent;
+  color: var(--mantine-color-body);
+}
+
+.modalBody {
+  padding: 0;
+  height: 100%;
+}
+
+.modalBody img {
+  display: flex;
+  height: auto;
+}
+
+.modalScrollableArea {
+  overflow-x: auto;
+  align-items: center;
+  height: 100%;
+}
+
 .stickySection {
   position: sticky;
   top: var(--mantine-header-height);
@@ -89,4 +120,5 @@
 
 .chipLabel {
   border-radius: 0;
+  font-weight: var(--mantine-fw-md);
 }

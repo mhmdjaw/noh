@@ -1,6 +1,6 @@
-import { Suspense } from 'react'
+import { Suspense, useCallback, useState } from 'react'
 import { defer, redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
-import { Await, Link, useLoaderData, type MetaFunction, type FetcherWithComponents, NavLink } from '@remix-run/react'
+import { Await, Link, useLoaderData, type MetaFunction, type FetcherWithComponents } from '@remix-run/react'
 import type { ProductFragment, ProductVariantsQuery, ProductVariantFragment } from 'storefrontapi.generated'
 import {
   Image,
@@ -21,12 +21,14 @@ import {
   Chip,
   Grid,
   Group,
+  Modal,
   Stack,
   Title,
   UnstyledButton
 } from '@mantine/core'
 import styles from './products.$handle.module.css'
 import { HiPlus } from 'react-icons/hi2'
+import { useDisclosure, useViewportSize } from '@mantine/hooks'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: `NOH | ${data?.product.title ?? ''}` }]
@@ -116,7 +118,7 @@ export default function Product() {
         <ProductMain selectedVariant={selectedVariant} product={product} variants={variants} />
       </Grid.Col>
       <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 1, sm: 2 }}>
-        <ProductImage variantImage={selectedVariant?.image} images={product.images.nodes} />
+        <ProductImages variantImage={selectedVariant?.image} images={product.images.nodes} />
       </Grid.Col>
       <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 3, sm: 3 }}>
         <ProductAction selectedVariant={selectedVariant} />
@@ -125,35 +127,92 @@ export default function Product() {
   )
 }
 
-function ProductImage({
+function ProductImages({
   variantImage,
   images
 }: {
   variantImage: ProductVariantFragment['image']
   images: ProductFragment['images']['nodes']
 }) {
+  const [opened, { open, close }] = useDisclosure(false)
+  const [imageData, setImageData] = useState<ProductVariantFragment['image'] | null>(null)
+
   if (!variantImage) {
     return <div className={styles.productImage} />
   }
+
+  const imageClicked = (data: ProductVariantFragment['image']) => () => {
+    setImageData(data)
+    open()
+  }
+
   return (
     <div className={styles.imageGrid}>
-      <UnstyledButton key={variantImage.id}>
+      <UnstyledButton className={styles.zoomIn} key={variantImage.id} onClick={imageClicked(variantImage)}>
         <div className={styles.productImage}>
-          <Image alt={variantImage.altText || 'Product Image'} data={variantImage} width="100%" />
+          <Image alt={variantImage.altText || 'Product Image'} data={variantImage} width="100%" loading="lazy" />
         </div>
       </UnstyledButton>
       {images.map(
-        (imageData) =>
-          (!imageData.altText || variantImage.altText === imageData.altText) &&
-          variantImage.url !== imageData.url && (
-            <UnstyledButton key={imageData.id}>
+        (data) =>
+          (!data.altText || variantImage.altText === data.altText) &&
+          variantImage.url !== data.url && (
+            <UnstyledButton className={styles.zoomIn} key={data.id} onClick={imageClicked(data)}>
               <div className={styles.productImage}>
-                <Image alt={imageData.altText || 'Product Image'} data={imageData} width="100%" />
+                <Image alt={data.altText || 'Product Image'} data={data} width="100%" loading="lazy" />
               </div>
             </UnstyledButton>
           )
       )}
+      <FullscreenImage opened={opened} close={close} data={imageData} />
     </div>
+  )
+}
+
+function FullscreenImage({
+  opened,
+  close,
+  data
+}: {
+  opened: boolean
+  close: () => void
+  data: ProductVariantFragment['image']
+}) {
+  const { height, width } = useViewportSize()
+
+  const ref = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      const elWidth = node.offsetWidth / 2
+      node.scrollLeft = node.scrollWidth / 2 - elWidth
+    }
+  }, [])
+
+  return (
+    <Modal
+      opened={Boolean(data) && opened}
+      onClose={close}
+      fullScreen
+      radius={0}
+      transitionProps={{ transition: 'fade', duration: 200 }}
+      zIndex={99999}
+      classNames={{ header: styles.modalHeader, body: styles.modalBody }}
+      closeButtonProps={{ c: 'var(--mantine-color-text)', radius: 'xl', size: 'xl', iconSize: 24 }}
+    >
+      <Group ref={ref} gap={0} className={styles.modalScrollableArea}>
+        {data && (
+          <Image
+            alt={data.altText || 'Product Image'}
+            data={data}
+            style={{
+              width: width > height ? '100%' : 'auto',
+              height: height > width ? '100%' : 'auto',
+              cursor: 'zoom-out'
+            }}
+            onClick={close}
+          />
+        )}
+      </Group>
+    </Modal>
   )
 }
 
@@ -298,6 +357,7 @@ function AddToCartButton({
             loading={fetcher.state !== 'idle'}
             loaderProps={{ type: 'dots' }}
             size="xl"
+            mb={{ base: 40, sm: 0 }}
           >
             {children}
           </Button>

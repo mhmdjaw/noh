@@ -62,9 +62,55 @@ footer {
 
 /*
 * --------------------------------------------------
+* Shopify/privacy policy banner
+* --------------------------------------------------
+*/
+
+#shopify-pc__banner {
+  box-shadow: none;
+  border-top: var(--mantine-border-width) solid var(--mantine-color-text);
+}
+
+#shopify-pc__banner *,
+#shopify-pc__prefs * {
+  outline-color: var(--mantine-color-text);
+  border-radius: 0;
+}
+
+#shopify-pc__banner button,
+#shopify-pc__prefs button {
+  font-weight: var(--mantine-fw-md);
+}
+
+#shopify-pc__banner button:focus,
+#shopify-pc__prefs button:focus {
+  box-shadow: 0 0 0 2px var(--mantine-color-text);
+}
+
+#shopify-pc__banner__btn-manage-prefs:focus {
+  box-shadow: none !important;
+}
+
+#shopify-pc__banner__btn-accept {
+  background-color: var(--mantine-color-text);
+  color: var(--mantine-color-body);
+}
+
+#shopify-pc__prefs *:focus ~ span {
+  background-color: transparent;
+}
+
+#shopify-pc__prefs *:focus ~ span svg {
+  background-color: transparent;
+  box-shadow: 0 0 0 4px var(--mantine-color-text);
+}
+
+/*
+* --------------------------------------------------
 * components/Aside
 * --------------------------------------------------
 */
+
 aside {
   background: var(--color-light);
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
