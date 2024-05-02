@@ -6,6 +6,7 @@ import { Footer } from '~/components/Footer'
 import { Header } from '~/components/Header'
 import { CartMain } from '~/components/Cart'
 import { PredictiveSearchForm, PredictiveSearchResults } from '~/components/Search'
+import { NewsLetter } from './NewsLetter'
 
 export type LayoutProps = {
   cart: Promise<CartApiQueryFragment | null>
@@ -25,6 +26,7 @@ export function Layout({ cart, children = null, footer, header, isLoggedIn }: La
       <Suspense>
         <Await resolve={footer}>{(footer) => <Footer menu={footer?.menu} shop={header?.shop} />}</Await>
       </Suspense>
+      <NewsLetter />
     </>
   )
 }

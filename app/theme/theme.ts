@@ -46,6 +46,7 @@ const theme = createTheme({
       '"Rajdhani", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji'
   },
   defaultRadius: 0,
+  cursorType: 'pointer',
   activeClassName: '',
   primaryColor: 'dark',
   other: {

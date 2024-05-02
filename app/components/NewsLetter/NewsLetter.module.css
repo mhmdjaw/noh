@@ -1,0 +1,40 @@
+.dialog * {
+  outline-color: var(--mantine-color-body) !important;
+}
+
+.dialog {
+  color: var(--mantine-color-body);
+  background: rgba(50, 50, 50, 0.5);
+  backdrop-filter: blur(7px);
+}
+
+div:has(> .dialog) {
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.closeButton {
+  background-color: transparent !important;
+  color: var(--mantine-color-body);
+}
+
+.checkboxInput {
+  background-color: transparent;
+}
+
+.emailForm {
+  flex-direction: row;
+  @mixin smaller-than $mantine-breakpoint-xs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.emailInput {
+  &[data-variant='default'] {
+    --input-bd: var(--mantine-color-body) !important;
+    --input-bg: transparent !important;
+    --input-bd-focus: var(--mantine-color-body) !important;
+    --input-color: var(--mantine-color-body);
+    --input-placeholder-color: var(--mantine-color-body);
+  }
+}

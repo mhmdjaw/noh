@@ -17,3 +17,11 @@
     justify-content: center;
   }
 }
+
+.creditsTitle {
+  font-weight: var(--mantine-fw-b);
+}
+
+.creditsContent {
+  padding: rem(8);
+}

@@ -23,11 +23,6 @@
   transition: opacity 0.2s;
 }
 
-.productItem:hover img:last-of-type {
-  z-index: 1;
-  opacity: 1;
-}
-
 .productItemOverlay {
   position: absolute;
   top: 0;
@@ -44,6 +39,44 @@
   pointer-events: none;
 }
 
-.productItem:hover .productItemOverlay {
-  opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  .productItem:hover img:last-of-type {
+    z-index: 1;
+    opacity: 1;
+  }
+
+  .productItem:hover .productItemOverlay {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .productItem img:last-of-type {
+    z-index: 1;
+    /* opacity: 1; */
+    animation: fade 5s linear infinite;
+  }
+
+  .productItem .productItemOverlay {
+    /* opacity: 1; */
+    animation: fade 5s linear infinite;
+  }
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+    45% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    95% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 }

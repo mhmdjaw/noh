@@ -70,6 +70,23 @@
   display: flex;
 }
 
+.featuredImageColumn {
+  border: var(--mantine-border-width) solid var(--mantine-color-text);
+  @mixin smaller-than $mantine-breakpoint-xs {
+    border: none !important;
+  }
+}
+
+.featuredImageColumn:nth-child(2) {
+  border-left: none;
+  border-right-width: calc(var(--mantine-border-width) / 2);
+}
+
+.featuredImageColumn:nth-child(4) {
+  border-right: none;
+  border-left-width: calc(var(--mantine-border-width) / 2);
+}
+
 .featuredProduct img {
   height: auto;
 }

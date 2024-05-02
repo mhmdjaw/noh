@@ -79,7 +79,7 @@ function Hero() {
         </Link>
       </div>
       <div className={styles.heroSectionContent}>
-        <BsEyeglasses size="6rem" color="var(--mantine-color-body)" />
+        <BsEyeglasses size="5rem" color="var(--mantine-color-body)" />
       </div>
     </div>
   )
@@ -89,7 +89,7 @@ function Featured({ products }: { products: FeaturedProductFragment[] }) {
   return (
     <Grid gutter={0}>
       {products.map(({ id, title, images, handle }) => (
-        <Grid.Col key={id} span={{ base: 12, xs: 6 }}>
+        <Grid.Col key={id} span={{ base: 12, xs: 6 }} className={styles.featuredImageColumn}>
           <Anchor component={Link} to={`/products/${handle}`} prefetch="intent" className={styles.featuredProduct}>
             <Image alt={images.nodes[1].altText || 'product image'} data={images.nodes[1]} />
             <div className={styles.featuredProductContent}>

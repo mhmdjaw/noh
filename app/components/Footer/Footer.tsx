@@ -1,8 +1,10 @@
-import { Anchor, Button, Grid, Group, Stack, Text } from '@mantine/core'
+import { Anchor, Button, FocusTrap, Grid, Group, Modal, Stack, Text } from '@mantine/core'
 import { Link } from '@remix-run/react'
 import type { FooterQuery, HeaderQuery } from 'storefrontapi.generated'
 import { useRootLoaderData } from '~/root'
 import styles from './Footer.module.css'
+import { openNewsLetter } from '../NewsLetter'
+import { useDisclosure } from '@mantine/hooks'
 
 export function Footer({ menu, shop }: FooterQuery & { shop: HeaderQuery['shop'] }) {
   return (
@@ -69,7 +71,7 @@ function FooterMenu({
               </Stack>
             </Grid.Col>
           </Grid>
-          <Button className={styles.newsLetterButton} variant="outline" color="black">
+          <Button className={styles.newsLetterButton} variant="outline" color="black" onClick={openNewsLetter}>
             subscribe to our news letter
           </Button>
         </Group>
@@ -79,9 +81,7 @@ function FooterMenu({
             primaryDomainUrl={primaryDomainUrl}
             color="var(--mantine-color-gray-text)"
           />
-          <Anchor fw="var(--mantine-fw-sb)" size="lg" c="var(--mantine-color-gray-text)">
-            Credits
-          </Anchor>
+          <Credits />
         </Group>
       </Stack>
     </nav>
@@ -137,6 +137,39 @@ function FooterSubMenu({
       </Anchor>
     )
   })
+}
+
+function Credits() {
+  const [opened, { open, close }] = useDisclosure(false)
+
+  return (
+    <>
+      <Anchor fw="var(--mantine-fw-sb)" size="lg" c="var(--mantine-color-gray-text)" onClick={open}>
+        Credits
+      </Anchor>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Site Credits"
+        centered
+        zIndex={99999}
+        classNames={{ title: styles.creditsTitle, content: styles.creditsContent }}
+        autoFocus={false}
+      >
+        <FocusTrap.InitialFocus />
+        <Stack>
+          {SITE_CREDITS.map((credit) => (
+            <Group key={credit.specialty} justify="space-between">
+              <Text fw="var(--mantine-fw-md)">{credit.specialty}</Text>
+              <Anchor fw="var(--mantine-fw-md)" href={credit.url}>
+                {credit.name}
+              </Anchor>
+            </Group>
+          ))}
+        </Stack>
+      </Modal>
+    </>
+  )
 }
 
 const FALLBACK_ABOUT_MENU = {
@@ -234,3 +267,16 @@ const FALLBACK_POLICIES_MENU = {
     }
   ]
 }
+
+const SITE_CREDITS = [
+  {
+    specialty: 'Development',
+    name: 'Mohamad Jawhar',
+    url: 'https://www.linkedin.com/in/mohamadjawhar/'
+  },
+  {
+    specialty: 'Digital Design',
+    name: 'Omar Kreidly',
+    url: 'https://www.linkedin.com/in/omarkreidly/'
+  }
+]

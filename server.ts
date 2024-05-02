@@ -11,6 +11,7 @@ import {
 import { createRequestHandler, getStorefrontHeaders, type AppLoadContext } from '@shopify/remix-oxygen'
 import { AppSession } from '~/lib/session'
 import { CART_QUERY_FRAGMENT } from '~/lib/fragments'
+import { createAdminClient } from '~/lib/create-admin-client'
 
 /**
  * Export a fetch handler in module format.
@@ -56,6 +57,16 @@ export default {
         customerAccountUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL
       })
 
+      /**
+       * Create Hydrogen's Admin API client.
+       */
+
+      const { admin } = createAdminClient({
+        privateAdminToken: env.PRIVATE_ADMIN_API_TOKEN,
+        storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
+        adminApiVersion: '2024-04'
+      })
+
       /*
        * Create a cart handler that will be used to
        * create and update the cart in the session.
@@ -79,6 +90,7 @@ export default {
           session,
           storefront,
           customerAccount,
+          admin,
           cart,
           env,
           waitUntil

@@ -7,6 +7,7 @@ import '@total-typescript/ts-reset'
 
 import type { Storefront, CustomerAccount, HydrogenCart } from '@shopify/hydrogen'
 import type { AppSession } from '~/lib/session'
+import { AdminClient } from '~/lib/create-admin-client'
 
 declare global {
   /**
@@ -25,6 +26,7 @@ declare global {
     PUBLIC_STOREFRONT_ID: string
     PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID: string
     PUBLIC_CUSTOMER_ACCOUNT_API_URL: string
+    PRIVATE_ADMIN_API_TOKEN: string
   }
 }
 
@@ -37,6 +39,7 @@ declare module '@shopify/remix-oxygen' {
     cart: HydrogenCart
     storefront: Storefront
     customerAccount: CustomerAccount
+    admin: AdminClient
     session: AppSession
     waitUntil: ExecutionContext['waitUntil']
   }
