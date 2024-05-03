@@ -1,5 +1,5 @@
 import { useLoaderData, Link } from '@remix-run/react'
-import { redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import { json, redirect, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
 import { Pagination, getPaginationVariables, Image } from '@shopify/hydrogen'
 import type { CollectionFragment } from 'storefrontapi.generated'
 
@@ -12,13 +12,11 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
     variables: paginationVariables
   })
 
-  console.log(collections.pageInfo)
-
   return redirect('/collections/shop-all', {
     status: 302
   })
 
-  // return json({ collections })
+  return json({ collections })
 }
 
 export default function Collections() {

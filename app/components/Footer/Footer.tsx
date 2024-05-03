@@ -43,7 +43,7 @@ function FooterMenu({
           </NavLink>
         )
       })} */}
-      <Stack p={40}>
+      <Stack p={{ base: 26, sm: 40 }} pb={20}>
         <Group justify="center" align="flex-start">
           <Grid gutter={8} flex="1 1 auto">
             <Grid.Col span={{ base: 6, sm: 3, xl: 2 }} order={{ base: 3, sm: 1 }} pt={{ base: 32, sm: 4 }}>
@@ -51,7 +51,9 @@ function FooterMenu({
                 <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
                   About
                 </Text>
-                <FooterSubMenu menu={FALLBACK_ABOUT_MENU} primaryDomainUrl={primaryDomainUrl} />
+                <Stack gap={8}>
+                  <FooterSubMenu menu={FALLBACK_ABOUT_MENU} primaryDomainUrl={primaryDomainUrl} />
+                </Stack>
               </Stack>
             </Grid.Col>
             <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 1, sm: 2 }}>
@@ -59,7 +61,9 @@ function FooterMenu({
                 <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
                   Customer Care
                 </Text>
-                <FooterSubMenu menu={FALLBACK_CUSTOMER_CARE_MENU} primaryDomainUrl={primaryDomainUrl} />
+                <Stack gap={8}>
+                  <FooterSubMenu menu={FALLBACK_CUSTOMER_CARE_MENU} primaryDomainUrl={primaryDomainUrl} />
+                </Stack>
               </Stack>
             </Grid.Col>
             <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 2, sm: 3 }} pl={{ base: 32, sm: 4 }}>
@@ -67,7 +71,9 @@ function FooterMenu({
                 <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
                   Socials
                 </Text>
-                <FooterSubMenu menu={FALLBACK_SOCIALS_MENU} primaryDomainUrl={primaryDomainUrl} />
+                <Stack gap={8}>
+                  <FooterSubMenu menu={FALLBACK_SOCIALS_MENU} primaryDomainUrl={primaryDomainUrl} />
+                </Stack>
               </Stack>
             </Grid.Col>
           </Grid>
@@ -212,9 +218,18 @@ const FALLBACK_CUSTOMER_CARE_MENU = {
       id: 'gid://shopify/MenuItem/461633126456',
       resourceId: 'gid://shopify/ShopCustomer/23358111800',
       tags: [],
-      title: 'Shipping & Returns',
+      title: 'Returns & Refunds',
       type: 'CUSTOMER_CARE',
-      url: '/pages/shipping-and-returns',
+      url: '/policies/returns-and-refunds',
+      items: []
+    },
+    {
+      id: 'gid://shopify/MenuItem/466293126456',
+      resourceId: 'gid://shopify/ShopCustomer/23363411800',
+      tags: [],
+      title: 'Shipping Policy',
+      type: 'CUSTOMER_CARE',
+      url: '/policies/shipping-policy',
       items: []
     }
   ]

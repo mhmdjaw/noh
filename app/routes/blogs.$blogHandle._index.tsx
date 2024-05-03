@@ -4,12 +4,12 @@ import { Image, Pagination, getPaginationVariables } from '@shopify/hydrogen'
 import type { ArticleItemFragment } from 'storefrontapi.generated'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [{ title: `Hydrogen | ${data?.blog.title ?? ''} blog` }]
+  return [{ title: `NOH | ${data?.blog.title ?? ''}` }]
 }
 
 export const loader = async ({ request, params, context: { storefront } }: LoaderFunctionArgs) => {
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 4
+    pageBy: 1
   })
 
   if (!params.blogHandle) {
@@ -44,7 +44,7 @@ export default function Blog() {
               <>
                 <PreviousLink>{isLoading ? 'Loading...' : <span>↑ Load previous</span>}</PreviousLink>
                 {nodes.map((article, index) => {
-                  return <ArticleItem article={article} key={article.id} loading={index < 2 ? 'eager' : 'lazy'} />
+                  return <ArticleItem article={article} key={article.id} loading={index < 1 ? 'eager' : 'lazy'} />
                 })}
                 <NextLink>{isLoading ? 'Loading...' : <span>Load more ↓</span>}</NextLink>
               </>
@@ -78,6 +78,7 @@ function ArticleItem({ article, loading }: { article: ArticleItemFragment; loadi
         )}
         <h3>{article.title}</h3>
         <small>{publishedAt}</small>
+        <h4>{article.excerpt}</h4>
       </Link>
     </div>
   )
@@ -103,7 +104,9 @@ const BLOGS_QUERY = `#graphql
         first: $first,
         last: $last,
         before: $startCursor,
-        after: $endCursor
+        after: $endCursor,
+        sortKey: UPDATED_AT,
+        reverse:  true
       ) {
         nodes {
           ...ArticleItem
@@ -124,6 +127,7 @@ const BLOGS_QUERY = `#graphql
       name
     }
     contentHtml
+    excerpt
     handle
     id
     image {
