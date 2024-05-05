@@ -1,0 +1,16 @@
+.articleLink {
+  display: flex;
+  overflow: hidden;
+}
+
+.articleImage {
+  display: flex;
+  height: auto;
+  transition: transform 0.5s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .articleLink:hover .articleImage {
+    transform: scale(1.05);
+  }
+}

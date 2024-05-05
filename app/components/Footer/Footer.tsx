@@ -46,7 +46,7 @@ function FooterMenu({
       <Stack p={{ base: 26, sm: 40 }} pb={20}>
         <Group justify="center" align="flex-start">
           <Grid gutter={8} flex="1 1 auto">
-            <Grid.Col span={{ base: 6, sm: 3, xl: 2 }} order={{ base: 3, sm: 1 }} pt={{ base: 32, sm: 4 }}>
+            <Grid.Col span={{ base: 6, sm: 3, xl: 2 }} order={{ base: 3, sm: 3 }} pt={{ base: 32, sm: 4 }}>
               <Stack align="flex-start">
                 <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
                   About
@@ -56,7 +56,7 @@ function FooterMenu({
                 </Stack>
               </Stack>
             </Grid.Col>
-            <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 1, sm: 2 }}>
+            <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 1, sm: 1 }}>
               <Stack align="flex-start">
                 <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
                   Customer Care
@@ -66,7 +66,7 @@ function FooterMenu({
                 </Stack>
               </Stack>
             </Grid.Col>
-            <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 2, sm: 3 }} pl={{ base: 32, sm: 4 }}>
+            <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 2, sm: 2 }} pl={{ base: 32, sm: 4 }}>
               <Stack align="flex-start">
                 <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
                   Socials
@@ -211,7 +211,7 @@ const FALLBACK_CUSTOMER_CARE_MENU = {
       tags: [],
       title: 'FAQs',
       type: 'CUSTOMER_CARE',
-      url: '/pages/faq',
+      url: '/pages/frequently-asked-questions',
       items: []
     },
     {
@@ -220,7 +220,7 @@ const FALLBACK_CUSTOMER_CARE_MENU = {
       tags: [],
       title: 'Returns & Refunds',
       type: 'CUSTOMER_CARE',
-      url: '/policies/returns-and-refunds',
+      url: '/policies/refund-policy',
       items: []
     },
     {

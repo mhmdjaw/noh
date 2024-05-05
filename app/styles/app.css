@@ -62,6 +62,38 @@ footer {
 
 /*
 * --------------------------------------------------
+* Shopify/HTML content
+* --------------------------------------------------
+*/
+
+.html-content {
+  font-size: rem(20);
+  color: var(--mantine-color-gray-text);
+}
+
+.html-content p {
+  font-size: rem(20);
+  color: var(--mantine-color-gray-text);
+}
+
+.html-content :is(h1, h2, h3, h4, h5, h6) {
+  font-size: rem(28);
+  color: var(--mantine-color-text);
+  font-weight: var(--mantine-fw-md);
+}
+
+.html-content a {
+  text-decoration: underline;
+  color: var(--mantine-color-anchor);
+}
+
+.html-content img {
+  width: 100%;
+  height: auto;
+}
+
+/*
+* --------------------------------------------------
 * Shopify/privacy policy banner
 * --------------------------------------------------
 */
@@ -311,25 +343,6 @@ aside li {
   grid-gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(var(--grid-item-width), 1fr));
   margin-bottom: 2rem;
-}
-
-.blog-article-image {
-  aspect-ratio: 3/2;
-  display: block;
-}
-
-.blog-article-image img {
-  height: 100%;
-}
-
-/*
-* --------------------------------------------------
-* routes/blog.$articlehandle.tsx
-* --------------------------------------------------
-*/
-.article img {
-  height: auto;
-  width: 100%;
 }
 
 /*

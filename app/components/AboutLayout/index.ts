@@ -1,0 +1,1 @@
+export { AboutLayout } from './AboutLayout'

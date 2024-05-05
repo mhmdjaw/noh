@@ -9,6 +9,8 @@ export async function loader({ context }: LoaderFunctionArgs) {
     throw new Response('No policies found', { status: 404 })
   }
 
+  throw new Response('Page Not Found', { status: 404 })
+
   return json({ policies })
 }
 

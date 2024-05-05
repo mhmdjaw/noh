@@ -1,6 +1,7 @@
 import { json, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
-import { Link, useLoaderData, type MetaFunction } from '@remix-run/react'
+import { useLoaderData, type MetaFunction } from '@remix-run/react'
 import { type Shop } from '@shopify/hydrogen/storefront-api-types'
+import { Container, Title } from '@mantine/core'
 
 type SelectedPolicies = keyof Pick<Shop, 'privacyPolicy' | 'shippingPolicy' | 'termsOfService' | 'refundPolicy'>
 
@@ -41,16 +42,14 @@ export default function Policy() {
   const { policy } = useLoaderData<typeof loader>()
 
   return (
-    <div className="policy">
-      <br />
-      <br />
-      <div>
-        <Link to="/policies">← Back to Policies</Link>
-      </div>
-      <br />
-      <h1>{policy.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: policy.body }} />
-    </div>
+    <Container size="sm" py={{ base: 26, xs: 40 }}>
+      <header>
+        <Title order={1} size={50} fw="var(--mantine-fw-b)" mb={16}>
+          {policy.title}
+        </Title>
+      </header>
+      <main className="html-content" dangerouslySetInnerHTML={{ __html: policy.body }} />
+    </Container>
   )
 }
 
