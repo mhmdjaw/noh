@@ -244,7 +244,7 @@ const FALLBACK_SOCIALS_MENU = {
       tags: [],
       title: 'Instagram',
       type: 'SHOP_SOCIALS',
-      url: 'https://www.linkedin.com/company/noh-eyewear',
+      url: 'https://www.instagram.com/noheyewear/?igsh=MW15YTdsdWVqMWxj',
       items: []
     },
     {
@@ -253,7 +253,7 @@ const FALLBACK_SOCIALS_MENU = {
       tags: [],
       title: 'Facebook',
       type: 'SHOP_SOCIALS',
-      url: 'https://www.linkedin.com/company/noh-eyewear',
+      url: 'https://www.instagram.com/noheyewear/?igsh=MW15YTdsdWVqMWxj',
       items: []
     }
   ]

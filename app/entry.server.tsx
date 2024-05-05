@@ -11,7 +11,7 @@ export default async function handleRequest(
   remixContext: EntryContext
 ) {
   const { nonce, header, NonceProvider } = createContentSecurityPolicy({
-    connectSrc: ['noh-eyewear.myshopify.com'],
+    connectSrc: ['noh-eyewear.myshopify.com', 'wss://noh-eyewear.vercel.app:*'],
     styleSrc: ['fonts.googleapis.com'],
     defaultSrc: ['fonts.gstatic.com']
   })

@@ -181,10 +181,20 @@ function Socials() {
   return (
     <div className={styles.socials}>
       <Stack py={15} pl={7} gap={12}>
-        <ActionIcon component="a" variant="transparent" size="xl" href="#">
+        <ActionIcon
+          component="a"
+          variant="transparent"
+          size="xl"
+          href="https://www.instagram.com/noheyewear/?igsh=MW15YTdsdWVqMWxj"
+        >
           <FaInstagram size="70%" />
         </ActionIcon>
-        <ActionIcon component="a" variant="transparent" size="xl" href="#">
+        <ActionIcon
+          component="a"
+          variant="transparent"
+          size="xl"
+          href="https://www.instagram.com/noheyewear/?igsh=MW15YTdsdWVqMWxj"
+        >
           <FaFacebook size="70%" />
         </ActionIcon>
       </Stack>
