@@ -189,7 +189,7 @@
 .socials {
   position: fixed;
   right: 0;
-  top: calc(50% + calc(var(--mantine-header-height) / 2));
+  top: calc(50vh + calc(var(--mantine-header-height) / 2));
   transform: translateY(-50%);
   background-color: var(--mantine-color-body);
   border: var(--mantine-border-width) solid var(--mantine-color-text);

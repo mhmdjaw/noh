@@ -80,7 +80,7 @@
 }
 
 .productOnSale s {
-  opacity: 0.5;
+  color: var(--mantine-color-gray-text);
 }
 
 .accordionItem {

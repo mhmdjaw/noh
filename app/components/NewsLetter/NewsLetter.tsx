@@ -41,7 +41,7 @@ export function NewsLetter() {
       onClose={newsLetterClose}
       size="xl"
       radius="md"
-      position={{ top: 'calc(50% + calc(var(--mantine-header-height) / 2))', left: '50%' }}
+      position={{ top: 'calc(50vh + calc(var(--mantine-header-height) / 2))', left: '50%' }}
       classNames={{ root: styles.dialog, closeButton: styles.closeButton }}
       transitionProps={{ transition: 'fade' }}
       p={{ base: 28, xs: 34 }}
