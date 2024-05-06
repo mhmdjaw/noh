@@ -148,7 +148,6 @@ function ShopAll() {
         <Overlay
           className={styles.shopAllOverlay}
           gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 80%)"
-          zIndex={10}
         >
           <Anchor className={styles.shopAllLink} prefetch="intent" component={Link} to="/collections/shop-all" />
           <Button

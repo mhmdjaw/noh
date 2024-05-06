@@ -172,11 +172,15 @@
   align-items: center;
   opacity: 0;
   transition: opacity 0.2s;
+  z-index: 8;
+  border-top: var(--mantine-border-width) solid var(--mantine-color-text);
+  top: -2px;
   @mixin hover {
     opacity: 1;
   }
   @mixin smaller-than $mantine-breakpoint-sm {
     opacity: 1;
+    z-index: 10;
   }
 }
 
