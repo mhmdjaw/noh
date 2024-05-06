@@ -112,17 +112,6 @@
   }
 }
 
-@media (hover: none) {
-  .headerMenuItem:active::before {
-    bottom: rem(-9);
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-    @mixin smaller-than $mantine-breakpoint-sm {
-      bottom: rem(-14);
-    }
-  }
-}
-
 .headerMenuItem:global(.active)::before {
   bottom: rem(-9);
   opacity: 1;
