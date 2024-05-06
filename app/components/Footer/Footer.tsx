@@ -48,7 +48,7 @@ function FooterMenu({
           <Grid gutter={8} flex="1 1 auto">
             <Grid.Col span={{ base: 6, sm: 3, xl: 2 }} order={{ base: 3, sm: 3 }} pt={{ base: 32, sm: 4 }}>
               <Stack align="flex-start">
-                <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
+                <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="md">
                   About
                 </Text>
                 <Stack gap={8}>
@@ -58,7 +58,7 @@ function FooterMenu({
             </Grid.Col>
             <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 1, sm: 1 }}>
               <Stack align="flex-start">
-                <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
+                <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="md">
                   Customer Care
                 </Text>
                 <Stack gap={8}>
@@ -68,7 +68,7 @@ function FooterMenu({
             </Grid.Col>
             <Grid.Col span={{ base: 6, sm: 4, xl: 3 }} order={{ base: 2, sm: 2 }} pl={{ base: 32, sm: 4 }}>
               <Stack align="flex-start">
-                <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="lg">
+                <Text c="var(--mantine-color-gray-text)" fw="var(--mantine-fw-sb)" size="md">
                   Socials
                 </Text>
                 <Stack gap={8}>
@@ -132,13 +132,13 @@ function FooterSubMenu({
         rel="noopener noreferrer"
         target="_blank"
         fw="var(--mantine-fw-sb)"
-        size="lg"
+        size="md"
         c={color}
       >
         {item.title}
       </Anchor>
     ) : (
-      <Anchor component={Link} key={item.id} prefetch="intent" to={url} fw="var(--mantine-fw-sb)" size="lg" c={color}>
+      <Anchor component={Link} key={item.id} prefetch="intent" to={url} fw="var(--mantine-fw-sb)" size="md" c={color}>
         {item.title}
       </Anchor>
     )
@@ -150,7 +150,7 @@ function Credits() {
 
   return (
     <>
-      <Anchor fw="var(--mantine-fw-sb)" size="lg" c="var(--mantine-color-gray-text)" onClick={open}>
+      <Anchor fw="var(--mantine-fw-sb)" size="md" c="var(--mantine-color-gray-text)" onClick={open}>
         Credits
       </Anchor>
       <Modal

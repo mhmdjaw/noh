@@ -152,8 +152,9 @@
 }
 
 .shopAllImage {
+  border-top: var(--mantine-border-width) solid var(--mantine-color-text);
   position: relative;
-  width: 70%;
+  width: 100%;
   @mixin smaller-than $mantine-breakpoint-sm {
     width: 100%;
   }
