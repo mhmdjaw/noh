@@ -57,7 +57,7 @@ function Hero() {
           sizes="100vw"
         /> */}
         <div className="media" />
-        <video className="media" autoPlay loop muted playsInline src="/noh-video.mp4"></video>
+        <video className="media" autoPlay loop muted playsInline src="/test-footage.mp4"></video>
       </div>
       <div className={styles.heroSectionContent}>
         <Link className={`${styles.roundedText} ${styles.rotating}`} prefetch="intent" to="/collections/shop-all">

@@ -1,5 +1,5 @@
 import { json, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
-import { Form, NavLink, Outlet, useLoaderData } from '@remix-run/react'
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react'
 import { CUSTOMER_DETAILS_QUERY } from '~/graphql/customer-account/CustomerDetailsQuery'
 
 export function shouldRevalidate() {
@@ -66,16 +66,6 @@ function AccountMenu() {
       <NavLink to="/account/addresses" style={isActiveStyle}>
         &nbsp; Addresses &nbsp;
       </NavLink>
-      &nbsp;|&nbsp;
-      <Logout />
     </nav>
-  )
-}
-
-function Logout() {
-  return (
-    <Form className="account-logout" method="POST" action="/account/logout">
-      &nbsp;<button type="submit">Sign out</button>
-    </Form>
   )
 }

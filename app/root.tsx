@@ -24,6 +24,7 @@ import { Layout } from '~/components/Layout'
 import { cssBundleHref } from '@remix-run/css-bundle'
 import { ColorSchemeScript, MantineProvider } from '@mantine/core'
 import theme, { resolver } from './theme'
+import { ErrorLayout } from './components/ErrorLayout'
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -166,6 +167,12 @@ export function ErrorBoundary() {
     errorMessage = error.message
   }
 
+  if (errorStatus === 404) {
+    errorMessage = "Sorry, the page you're looking for does not exist."
+  } else {
+    errorMessage = 'Something went Wrong... please refresh the page or try again later.'
+  }
+
   return (
     <html lang="en">
       <head>
@@ -177,7 +184,7 @@ export function ErrorBoundary() {
       <body>
         <MantineProvider theme={theme} cssVariablesResolver={resolver} defaultColorScheme="light">
           <Layout {...rootData}>
-            <div className="route-error">
+            {/* <div className="route-error">
               <h1>Oops</h1>
               <h2>{errorStatus}</h2>
               {errorMessage && (
@@ -185,7 +192,8 @@ export function ErrorBoundary() {
                   <pre>{errorMessage}</pre>
                 </fieldset>
               )}
-            </div>
+            </div> */}
+            <ErrorLayout message={errorMessage} />
           </Layout>
         </MantineProvider>
         <ScrollRestoration nonce={nonce} />

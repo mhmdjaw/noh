@@ -135,6 +135,15 @@ export default function AccountProfile() {
           {state !== 'idle' ? 'Updating' : 'Update'}
         </button>
       </Form>
+      <Logout />
     </div>
+  )
+}
+
+function Logout() {
+  return (
+    <Form className="account-logout" method="POST" action="/account/logout">
+      &nbsp;<button type="submit">Sign out</button>
+    </Form>
   )
 }

@@ -1,0 +1,33 @@
+.errorSection {
+  height: calc(100vh - var(--mantine-header-height));
+  position: relative;
+  overflow: hidden;
+}
+
+.errorSectionImage {
+  position: relative;
+  height: 100%;
+}
+
+.errorSection :global(.media) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--mantine-color-text);
+  object-fit: cover;
+  object-position: center center;
+}
+
+.errorSectionContent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--mantine-color-body);
+}
