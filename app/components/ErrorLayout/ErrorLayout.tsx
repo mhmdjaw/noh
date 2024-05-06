@@ -7,7 +7,7 @@ export function ErrorLayout({ message }: { message: string }) {
     <div className={styles.errorSection}>
       <div className={styles.errorSectionImage}>
         <div className="media" />
-        <video className="media" autoPlay loop muted playsInline src="/test-footage.mp4"></video>
+        <video className="media" autoPlay loop muted playsInline src="/mountain-footage.mp4"></video>
       </div>
       <div className={styles.errorSectionContent}>
         <Stack align="center" p={28}>

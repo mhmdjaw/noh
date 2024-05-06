@@ -78,7 +78,7 @@ function FooterMenu({
             </Grid.Col>
           </Grid>
           <Button className={styles.newsLetterButton} variant="outline" color="black" onClick={openNewsLetter}>
-            subscribe to our news letter
+            subscribe to our newsletter
           </Button>
         </Group>
         <Group className={styles.policiesMenu}>
