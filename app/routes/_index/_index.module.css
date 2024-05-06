@@ -157,7 +157,7 @@
   width: 100%;
   @mixin smaller-than $mantine-breakpoint-sm {
     width: 100%;
-    border-top: none;
+    /* border-top: none; */
   }
 }
 
