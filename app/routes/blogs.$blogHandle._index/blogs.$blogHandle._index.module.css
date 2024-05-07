@@ -3,6 +3,10 @@
   overflow: hidden;
 }
 
+.articleImageContainer {
+  overflow: hidden;
+}
+
 .articleImage {
   display: flex;
   height: auto;

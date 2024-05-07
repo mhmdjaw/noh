@@ -138,13 +138,15 @@ function ArticleItem({ article, loading }: { article: ArticleItemFragment; loadi
       <Anchor className={styles.articleLink} component={Link} to={`/blogs/${article.blog.handle}/${article.handle}`}>
         <Stack gap={8}>
           {article.image && (
-            <Image
-              className={styles.articleImage}
-              alt={article.image.altText || article.title}
-              data={article.image}
-              loading={loading}
-              width="100%"
-            />
+            <div className={styles.articleImageContainer}>
+              <Image
+                className={styles.articleImage}
+                alt={article.image.altText || article.title}
+                data={article.image}
+                loading={loading}
+                width="100%"
+              />
+            </div>
           )}
           <Title order={2} mt={{ base: 10, xs: 20 }}>
             {article.title}
