@@ -146,9 +146,35 @@
   }
 }
 
+@keyframes blurring-mobile {
+  0% {
+    filter: blur(0);
+  }
+  30% {
+    filter: blur(0);
+  }
+  40% {
+    filter: blur(2px);
+  }
+  50% {
+    filter: blur(2px);
+  }
+  60% {
+    filter: blur(2px);
+  }
+  70% {
+    filter: blur(0);
+  }
+  100% {
+    filter: blur(0);
+  }
+}
+
 .blur {
-  filter: blur(3px);
   animation: blurring 5s linear infinite;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    animation: blurring-mobile 5s linear infinite;
+  }
 }
 
 .shopAllImage {
