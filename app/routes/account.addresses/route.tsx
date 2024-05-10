@@ -532,8 +532,8 @@ export function AddressForm({
           defaultValue={address?.phoneNumber ?? ''}
           id="phoneNumber"
           name="phoneNumber"
-          placeholder="+16135551111*"
-          // pattern="^\+?[1-9]\d{3,14}$"
+          placeholder="+16135551111"
+          pattern="^\+?[1-9]\d{3,14}$"
           type="tel"
           size="md"
         />
