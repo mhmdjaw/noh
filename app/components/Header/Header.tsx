@@ -188,7 +188,7 @@ function CartLayout({ count, cart }: { count: number; cart: CartApiQueryFragment
   // open cart aside when adding to cart
   useEffect(() => {
     if (opened || !addToCartFetchers.length) return
-    open()
+    setTimeout(() => open(), 500)
   }, [addToCartFetchers, opened, open])
 
   return (

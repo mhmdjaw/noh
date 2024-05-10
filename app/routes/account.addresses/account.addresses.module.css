@@ -1,0 +1,24 @@
+.existingAddressContainer {
+  width: 100%;
+}
+
+.existingAddressRemoving {
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.addressOverview {
+  flex: 1 0 0;
+}
+
+.editButton {
+  align-self: stretch;
+}
+
+.select:invalid {
+  color: var(--mantine-color-placeholder);
+}
+
+.select option {
+  color: var(--mantine-color-text);
+}

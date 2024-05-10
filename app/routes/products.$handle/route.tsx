@@ -27,7 +27,7 @@ import {
   UnstyledButton
 } from '@mantine/core'
 import styles from './products.$handle.module.css'
-import { HiPlus } from 'react-icons/hi2'
+import { HiPlus, HiArrowsRightLeft } from 'react-icons/hi2'
 import { useDisclosure, useViewportSize } from '@mantine/hooks'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -117,8 +117,11 @@ export default function Product() {
       <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 2, sm: 1 }}>
         <ProductMain selectedVariant={selectedVariant} product={product} variants={variants} />
       </Grid.Col>
-      <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 1, sm: 2 }}>
+      <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 1, sm: 2 }} pos="relative">
         <ProductImages variantImage={selectedVariant?.image} images={product.images.nodes} />
+        <div className={styles.swipeIndicatorContainer}>
+          <HiArrowsRightLeft size={24} />
+        </div>
       </Grid.Col>
       <Grid.Col span={{ base: 12, sm: 4 }} order={{ base: 3, sm: 3 }}>
         <ProductAction selectedVariant={selectedVariant} />

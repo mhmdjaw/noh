@@ -1,0 +1,14 @@
+.productImage {
+  display: flex;
+  height: auto;
+}
+
+.summaryTitle {
+  font-weight: var(--mantine-fw-sb);
+  flex: 1 0 0;
+}
+
+.summaryValue {
+  font-weight: var(--mantine-fw-b);
+  flex: 1 0 0;
+}

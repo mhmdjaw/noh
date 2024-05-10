@@ -5,7 +5,8 @@ import {
   type VariantColorsResolver,
   defaultVariantColorsResolver,
   parseThemeColor,
-  Button
+  Button,
+  Alert
 } from '@mantine/core'
 
 const variantColorResolver: VariantColorsResolver = (input) => {
@@ -65,6 +66,13 @@ const theme = createTheme({
       styles: {
         root: {
           transition: 'color .2s, background .2s'
+        }
+      }
+    }),
+    Alert: Alert.extend({
+      styles: {
+        title: {
+          fontSize: rem(16)
         }
       }
     })

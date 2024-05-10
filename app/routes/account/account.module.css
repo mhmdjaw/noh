@@ -1,0 +1,27 @@
+.accountContainer {
+  padding-top: rem(150);
+  padding-bottom: rem(40);
+  min-height: calc(100vh - var(--mantine-header-height));
+  @mixin smaller-than $mantine-breakpoint-sm {
+    padding-top: rem(64);
+  }
+}
+
+.accountNavigation {
+  margin-bottom: rem(64);
+}
+
+.accountLink {
+  color: var(--mantine-color-gray-text);
+  font-size: rem(24);
+  font-weight: var(--mantine-fw-b);
+  text-transform: uppercase;
+  @mixin smaller-than $mantine-breakpoint-sm {
+    font-size: rem(22);
+  }
+}
+
+.accountLink:global(.active) {
+  color: var(--mantine-color-text);
+  text-decoration: underline;
+}

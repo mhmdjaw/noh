@@ -47,6 +47,7 @@ export const CUSTOMER_ORDER_QUERY = `#graphql
     name
     statusPageUrl
     processedAt
+    financialStatus
     fulfillments(first: 1) {
       nodes {
         status
@@ -62,6 +63,11 @@ export const CUSTOMER_ORDER_QUERY = `#graphql
       ...OrderMoney
     }
     shippingAddress {
+      name
+      formatted(withName: true)
+      formattedArea
+    }
+    billingAddress {
       name
       formatted(withName: true)
       formattedArea

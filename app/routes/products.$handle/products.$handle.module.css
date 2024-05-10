@@ -29,6 +29,19 @@
   width: 100%;
 }
 
+.swipeIndicatorContainer {
+  position: absolute;
+  top: rem(20);
+  right: rem(20);
+  color: var(--mantine-color-text);
+  width: rem(24);
+  height: rem(24);
+  pointer-events: none;
+  @mixin larger-than $mantine-breakpoint-sm {
+    display: none;
+  }
+}
+
 .zoomIn {
   cursor: zoom-in;
 }

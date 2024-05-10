@@ -1,0 +1,5 @@
+.orderItem {
+  border: var(--mantine-border-width) solid var(--mantine-color-text);
+  padding: rem(16);
+  width: 100%;
+}

@@ -3,6 +3,8 @@ import type { CustomerUpdateInput } from '@shopify/hydrogen/customer-account-api
 import { CUSTOMER_UPDATE_MUTATION } from '~/graphql/customer-account/CustomerUpdateMutation'
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
 import { Form, useActionData, useNavigation, useOutletContext, type MetaFunction } from '@remix-run/react'
+import { Alert, Button, Stack, TextInput } from '@mantine/core'
+import { MdErrorOutline } from 'react-icons/md'
 
 export type ActionResponse = {
   error: string | null
@@ -35,47 +37,27 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   const form = await request.formData()
 
-  try {
-    const customer: CustomerUpdateInput = {}
-    const validInputKeys = ['firstName', 'lastName'] as const
-    for (const [key, value] of form.entries()) {
-      if (!validInputKeys.includes(key as any)) {
-        continue
-      }
-      if (typeof value === 'string' && value.length) {
-        customer[key as (typeof validInputKeys)[number]] = value
-      }
+  const customer: CustomerUpdateInput = {}
+  const validInputKeys = ['firstName', 'lastName'] as const
+  for (const [key, value] of form.entries()) {
+    if (!validInputKeys.includes(key as any)) {
+      continue
     }
-
-    // update customer and possibly password
-    const { data, errors } = await customerAccount.mutate(CUSTOMER_UPDATE_MUTATION, {
-      variables: {
-        customer
-      }
-    })
-
-    if (errors?.length) {
-      throw new Error(errors[0].message)
+    if (typeof value === 'string' && value.length) {
+      customer[key as (typeof validInputKeys)[number]] = value
     }
+  }
 
-    if (!data?.customerUpdate?.customer) {
-      throw new Error('Customer profile update failed.')
+  // update customer and possibly password
+  const { data, errors } = await customerAccount.mutate(CUSTOMER_UPDATE_MUTATION, {
+    variables: {
+      customer
     }
+  })
 
+  if (errors?.length) {
     return json(
-      {
-        error: null,
-        customer: data?.customerUpdate?.customer
-      },
-      {
-        headers: {
-          'Set-Cookie': await context.session.commit()
-        }
-      }
-    )
-  } catch (error: any) {
-    return json(
-      { error: error.message, customer: null },
+      { error: errors[0].message, customer: null },
       {
         status: 400,
         headers: {
@@ -84,6 +66,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
       }
     )
   }
+
+  return json(
+    {
+      error: null,
+      customer: data?.customerUpdate?.customer
+    },
+    {
+      headers: {
+        'Set-Cookie': await context.session.commit()
+      }
+    }
+  )
 }
 
 export default function AccountProfile() {
@@ -94,46 +88,55 @@ export default function AccountProfile() {
 
   return (
     <div className="account-profile">
-      <h2>My profile</h2>
-      <br />
       <Form method="PUT">
-        <legend>Personal information</legend>
-        <fieldset>
-          <label htmlFor="firstName">First name</label>
-          <input
+        <Stack mb={32}>
+          <TextInput
             id="firstName"
             name="firstName"
             type="text"
             autoComplete="given-name"
-            placeholder="First name"
+            placeholder="First Name"
             aria-label="First name"
             defaultValue={customer.firstName ?? ''}
             minLength={2}
+            size="md"
           />
-          <label htmlFor="lastName">Last name</label>
-          <input
+          <TextInput
             id="lastName"
             name="lastName"
             type="text"
             autoComplete="family-name"
-            placeholder="Last name"
+            placeholder="Last Name"
             aria-label="Last name"
             defaultValue={customer.lastName ?? ''}
             minLength={2}
+            size="md"
           />
-        </fieldset>
-        {action?.error ? (
-          <p>
-            <mark>
-              <small>{action.error}</small>
-            </mark>
-          </p>
-        ) : (
-          <br />
-        )}
-        <button type="submit" disabled={state !== 'idle'}>
-          {state !== 'idle' ? 'Updating' : 'Update'}
-        </button>
+          <TextInput
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="Email"
+            aria-label="Email"
+            defaultValue={customer.emailAddress?.emailAddress ?? ''}
+            minLength={2}
+            size="md"
+            disabled
+          />
+        </Stack>
+        {action?.error && <Alert icon={<MdErrorOutline size="100%" />} color="red" title={action.error} mb={32} />}
+        <Button
+          type="submit"
+          disabled={state !== 'idle'}
+          loaderProps={{ type: 'dots' }}
+          loading={state !== 'idle'}
+          fullWidth
+          size="md"
+          mb="md"
+        >
+          SAVE CHANGES
+        </Button>
       </Form>
       <Logout />
     </div>
@@ -141,9 +144,21 @@ export default function AccountProfile() {
 }
 
 function Logout() {
+  const { state } = useNavigation()
+
   return (
     <Form className="account-logout" method="POST" action="/account/logout">
-      &nbsp;<button type="submit">Sign out</button>
+      <Button
+        variant="outline"
+        type="submit"
+        disabled={state !== 'idle'}
+        loaderProps={{ type: 'dots' }}
+        loading={state !== 'idle'}
+        fullWidth
+        size="md"
+      >
+        LOG OUT
+      </Button>
     </Form>
   )
 }
